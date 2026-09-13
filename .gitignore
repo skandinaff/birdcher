@@ -1,4 +1,0 @@
-# Reproducible local source and kernel-build workspaces. Their exact revisions
-# are documented in docs/ and are not project source files.
-/build/
-/vendor/
