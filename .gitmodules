@@ -1,0 +1,3 @@
+[submodule "external/radxa-zero2pro-camera"]
+	path = external/radxa-zero2pro-camera
+	url = https://github.com/skandinaff/radxa-zero2pro-camera.git
