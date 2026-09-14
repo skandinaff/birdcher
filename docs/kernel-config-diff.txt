@@ -1,0 +1,50 @@
+# Kernel config diff: running Armbian vs Birdcher Phase-1 prepared tree
+#
+#   running : /boot/config-6.18.44-current-meson64 (from the VIM3)
+#   prepared: armbian-vim3-camera/phase1-running-kernel/.config (after olddefconfig)
+#
+# '<' = running Armbian   '>' = Birdcher prepared tree
+#
+# NO camera-related option was changed.  The kernel was NOT rebuilt.
+# Every difference below is an artefact of the build host's toolchain
+# version or of EXTRAWIFI=no, and none of them affects module ABI:
+# Module.symvers is byte-identical to the shipped headers package.
+
+5c5
+< CONFIG_CC_VERSION_TEXT="aarch64-linux-gnu-gcc (Debian 14.2.0-19) 14.2.0"
+---
+> CONFIG_CC_VERSION_TEXT="aarch64-linux-gnu-gcc-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0"
+10c10
+< CONFIG_AS_VERSION=24400
+---
+> CONFIG_AS_VERSION=24200
+12c12
+< CONFIG_LD_VERSION=24400
+---
+> CONFIG_LD_VERSION=24200
+14,16c14,15
+< CONFIG_RUSTC_VERSION=108500
+< CONFIG_RUSTC_LLVM_VERSION=190107
+< CONFIG_CC_CAN_LINK=y
+---
+> CONFIG_RUSTC_VERSION=0
+> CONFIG_RUSTC_LLVM_VERSION=0
+19d17
+< CONFIG_TOOLS_SUPPORT_RELR=y
+24,25c22
+< CONFIG_RUSTC_HAS_COERCE_POINTEE=y
+< CONFIG_PAHOLE_VERSION=130
+---
+> CONFIG_PAHOLE_VERSION=125
+878d874
+< CONFIG_RELR=y
+3859,3863d3854
+< CONFIG_RTL8822CS=m
+< # CONFIG_RTL8822EU is not set
+< CONFIG_RTL8192EU=m
+< CONFIG_RTL8189FS=m
+< CONFIG_RTL8189ES=m
+8965d8955
+< # CONFIG_RTL8723CS is not set
+11219d11208
+< # CONFIG_DEBUG_INFO_SPLIT is not set
