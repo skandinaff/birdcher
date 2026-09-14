@@ -1,0 +1,1 @@
+Before inventing a fix, diff against Khadas armisp-g12b. Khadas defines G12B/VIM3 behaviour; Linux 6.18 defines the API; Radxa is only a forward-port reference.
