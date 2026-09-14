@@ -14,20 +14,61 @@ overlay before the kernel starts.
 
 ## 2. Modules
 
-Built against the exact running kernel, `Module.symvers` byte-identical to
+The stack is exactly three modules, built against the running kernel with
+`Module.symvers` byte-identical to
 `linux-headers-current-meson64_26.8.3_arm64.deb`, all vermagic
 `6.18.44-current-meson64`:
 
 | Module | Role |
 | --- | --- |
+| `isp_clkc.ko` | ISP/CSI clocks, plus the sensor MCLK (`gen_clk`) and its output pad |
 | `imx415.ko` | upstream 6.18 sensor driver, **unmodified** |
-| `isp_clkc.ko` | VIM3 ISP/CSI clock provider (7 clocks) |
-| `ao_mclk.ko` | 24 MHz sensor INCK |
 | `iv009_isp.ko` | Amlogic G12B ISP + CSI-2 receiver, forward-ported to 6.18 |
 
-`dtbo_loader.ko` is **excluded**: with `CONFIG_OF_OVERLAY` unset,
-`of_overlay_fdt_apply()` is an inline stub returning `-ENOTSUPP`, so it could
-never have applied anything.
+Two modules were **removed** after first frame, along with the scaffolding
+that propped them up:
+
+- `ao_mclk.ko` programmed `HHI_GEN_CLK_CNTL` directly — the same register
+  `isp_clkc` already owns as a proper CCF clock. Two owners of one clock, and
+  the two disagreed: `ao_mclk` had the gate at bit 7 (the gxbb/axg layout),
+  `isp_clkc` had the correct G12A bit 11. The sensor now consumes `gen_clk`
+  through DT like any other clock consumer.
+- `dtbo_loader.ko` could never work: with `CONFIG_OF_OVERLAY` unset,
+  `of_overlay_fdt_apply()` is an inline stub returning `-ENOTSUPP`. The
+  runtime-overlay scripts built on it (`load.sh`, `unload.sh`) went with it;
+  U-Boot applies the overlay at boot instead.
+- `/etc/modprobe.d/birdcher-camera.conf` (`softdep imx415 pre: ao_mclk`) is
+  gone. Ordering is now a real dependency: the sensor's `clocks = <&isp_clkc 6>`
+  makes `imx415` defer until the clock provider exists.
+- `scripts/find-mclk-mux.sh` was a brute-force search for the MCLK mux value.
+  The schematic answered that question, so the search is deleted.
+
+### gen_clk ownership, after cleanup
+
+```
+isp_clkc  ── gen_clk_sel (xtal) ─→ gen_clk_div (/1) ─→ gen_clk (gate)
+              │                                            │
+              └─ routes GPIOAO_11 to mux 4 (GEN_CLK_EE)     └─ clocks = <&isp_clkc 6>
+                 per birdcher,gen-clk-pad = <11 4>             consumed by imx415 as "inck"
+```
+
+Two things had to be handled for this to work, both worth knowing:
+
+1. **The bootloader leaves `gen_clk_sel` holding 16**, which is not in the
+   driver's parent table `{0,5,6,7,20,...}`. `isp_clkc_mux_get_parent()`
+   reports index 0 ("xtal") for any unrecognised value, so the clock framework
+   claimed 24 MHz while the hardware drove nothing — `clk_get_rate()` looked
+   right and the sensor NAKed every transfer. `isp_clkc` now writes the xtal
+   selection explicitly. This *cannot* be done with `assigned-clock-parents`:
+   the only output exposed to DT is the final gate, whose sole parent is
+   `gen_clk_div`, so reparenting it to `&xtal` is rejected with `-EINVAL`
+   (`clk: failed to reparent gen_clk to xtal: -22`).
+2. **`isp_clkc` holds `gen_clk` enabled while it is routed to a pad.** Mainline
+   `imx415` waits ~100 us after `clk_prepare_enable()` before its first register
+   write, because it assumes INCK is a free-running crystal; Amlogic's own
+   IMX415 driver waits 30 ms precisely because it gates this clock. A cold
+   start inside the sensor's power-on loses that race. A pad muxed to a clock
+   output whose clock is gated off is just a dead pin anyway.
 
 ## 3. The four bugs that were blocking it
 
@@ -142,9 +183,8 @@ Each fix was verified in the disassembly, not just the source, e.g.:
 Clean boot, everything automatic, zero oopses:
 
 ```
+isp_clkc ...: gen_clk routed to GPIOAO_11 (mux 4 -> 4), 24000000 Hz
 isp_clkc ...: registered 7 aux ISP/CSI clocks via shared HHI syscon regmap
-ao_mclk: gen_clk on at 24 MHz (HHI_GEN_CLK_CNTL 0x00690000 -> 0x00680800)
-ao_mclk: GPIOAO_11 mux 0 -> 4 (AO_RTI_PINMUX_REG1 0x03330000 -> 0x03334000)
 imx415 0-001a: Detected IMX415 image sensor
 Matched subdev 'imx415 0-001a' for prefix 'imx415'
 IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000
@@ -155,13 +195,6 @@ MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
 `/dev/video1` ("juno R2") enumerates 8 formats (RGB4, RGB3, NV12, Y444, YUYV,
 UYVY, GREY, BYR2). Sensor subdev reports 3864x2192 `MEDIA_BUS_FMT_SGBRG10_1X10`.
 Capture at native resolution produces real, in-focus images.
-
-`ao_mclk` keeps the old Radxa path selectable for A/B testing on the bench:
-`modprobe ao_mclk source=clk12_24 pad=10 mux=7`.
-
-Boot ordering is handled by `/etc/modprobe.d/birdcher-camera.conf`
-(`softdep imx415 pre: ao_mclk`) — without it `imx415` probes before INCK exists
-and fails `-ENXIO: failed to get sensor out of standby`.
 
 ## 6. Known remaining issues
 
@@ -176,8 +209,17 @@ and fails `-ENXIO: failed to get sensor out of standby`.
    3864x2192 (stride 3968) works.** The scaler configuration is not being
    propagated from `S_FMT` into the ISP pipeline — next thing to fix.
 
-2. **White balance / colour matrix untuned.** Output has a heavy green cast,
-   expected for uncorrected Bayer. Needs AWB/CCM tuning.
+2. **White balance / colour matrix untuned.** Output has a heavy green cast.
+   Part of this is likely not "untuned" but *mis-tuned*: the ISP calibration
+   data shipped in `isp-module/src/calibration/` is explicitly
+   `acamera_calibrations_{static,dynamic}_linear_imx415.c` — "IMX415 ...
+   calibration set **for the Radxa Camera 4K on a Radxa Zero 2 Pro**". It is a
+   different camera module than the one on this board, and it assumes a fixed
+   lens with no focus motor ("The Radxa Camera 4K has a fixed lens and no
+   focus"), whereas the attached VIM3 module answers at 0x0c with a DW9714 VCM
+   — i.e. it has autofocus. Before hand-tuning AWB/CCM, check whether these
+   tables are appropriate at all; they also feed AE, so issue 3 may share this
+   root cause.
 
 3. **Auto-exposure fights you.** The ISP's AE overrides sensor exposure/gain
    within a frame or two and drives the scene to near-black (exposure written
