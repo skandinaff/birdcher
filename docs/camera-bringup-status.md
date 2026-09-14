@@ -1,136 +1,213 @@
 # VIM3 IMX415 bring-up — status
 
-**Bottom line: the kernel does not need to be replaced.**  The whole camera
-stack builds as external modules against the running Armbian kernel, and the
-device tree change rides the supported U-Boot overlay path.  Nothing has been
-installed, loaded, or rebooted.
+**The camera works.** Sensor → CSI-2 → ISP → V4L2 → real captured frames, on the
+stock Armbian 26.8.3 kernel `6.18.44-current-meson64`, with no kernel rebuild.
+The whole stack is external modules plus one boot-time DT overlay.
 
 ## 1. Was a kernel rebuild necessary?
 
-No.  `CONFIG_VIDEO_IMX415` being unset turned out not to matter — the upstream
-IMX415 driver builds cleanly out-of-tree, and every symbol the camera stack
-needs is already exported by the running kernel.
+No. `CONFIG_VIDEO_IMX415` being unset did not matter — the upstream driver
+builds out-of-tree and every symbol the stack needs is already exported.
+`CONFIG_OF_OVERLAY` being unset also did not force a rebuild; it only rules out
+the old runtime `dtbo_loader` approach, and U-Boot's `user_overlays` applies the
+overlay before the kernel starts.
 
-The one config gap that *is* real, `CONFIG_OF_OVERLAY` unset, does not force a
-rebuild either.  It only rules out the old runtime `dtbo_loader` approach; the
-U-Boot `user_overlays` mechanism applies the overlay before the kernel starts
-and needs no kernel support at all.
-
-## 2. Modules built
+## 2. Modules
 
 Built against the exact running kernel, `Module.symvers` byte-identical to
-`linux-headers-current-meson64_26.8.3_arm64.deb`:
+`linux-headers-current-meson64_26.8.3_arm64.deb`, all vermagic
+`6.18.44-current-meson64`:
 
-| Module | Source | vermagic |
-| --- | --- | --- |
-| `imx415.ko` | upstream 6.18 `drivers/media/i2c/imx415.c`, **unmodified** | `6.18.44-current-meson64` |
-| `isp_clkc.ko` | Birdcher — VIM3 ISP/CSI clock provider | `6.18.44-current-meson64` |
-| `ao_mclk.ko` | Birdcher — 24 MHz INCK on GPIOAO_10 | `6.18.44-current-meson64` |
-| `iv009_isp.ko` | Amlogic G12B ISP/CSI, forward-ported to 6.18 | `6.18.44-current-meson64` |
+| Module | Role |
+| --- | --- |
+| `imx415.ko` | upstream 6.18 sensor driver, **unmodified** |
+| `isp_clkc.ko` | VIM3 ISP/CSI clock provider (7 clocks) |
+| `ao_mclk.ko` | 24 MHz sensor INCK |
+| `iv009_isp.ko` | Amlogic G12B ISP + CSI-2 receiver, forward-ported to 6.18 |
 
-All four: no unresolved symbols, all dependencies (`videodev`, `v4l2-fwnode`,
-`v4l2-cci`, `mc`, `v4l2-async`, `videobuf2-*`) already present on the board.
+`dtbo_loader.ko` is **excluded**: with `CONFIG_OF_OVERLAY` unset,
+`of_overlay_fdt_apply()` is an inline stub returning `-ENOTSUPP`, so it could
+never have applied anything.
 
-The local `imx415/imx415.c` was checked and is byte-identical (SHA-256
-`d0e2d7b7…`) to the Armbian-patched tree's copy, so no Radxa mode tables or
-reset hacks leaked in.
+## 3. The four bugs that were blocking it
 
-`dtbo_loader.ko` is **dropped from the deliverable**.  It compiles, but with
-`CONFIG_OF_OVERLAY` unset `<linux/of.h>` substitutes an inline
-`of_overlay_fdt_apply()` returning `-ENOTSUPP`, so it could never apply
-anything.
+All four were found by checking board sources against the hardware, not by
+guesswork. Each is worth recording because each was silently wrong.
 
-## 3. Device tree validation
+### 3.1 MCLK was on the wrong pad, from the wrong clock (`ao_mclk`)
 
-Performed offline against the **exact running DTB**
-(`60eeaaff3b14ee93220a20a4994a4c92804e240db64df7bfd997b047a6f8136d`):
+The module drove **GPIOAO_10 / CLK12_24** — the *Radxa Zero 2 Pro* routing,
+carried over unverified. `docs/VIM3_CAMERA_HW_FACTS.md` already listed exactly
+that value under "Radxa values that must NOT be copied to VIM3".
 
-- `fdtoverlay` applies the overlay cleanly — **PASS**.
-- Every phandle resolves; no dangling references.
-- `reset-gpios` resolves to the `ti,tca6408` at `reg = <0x20>`, pin 3 — matching
-  the Khadas vendor `kvim3.dts` exactly.
-- CSI graph is bidirectional: `isp_ep` ↔ `imx415_ep`.
-- 4 data lanes, `link-frequencies = 720 MHz` → 1440 Mbps/lane, which the
-  upstream IMX415 driver supports at 24 MHz INCK.
-- The sensor lands on `/soc/bus@ff800000/i2c@5000` (AO I2C), corroborated
-  independently by the base DTB and by the vendor tree's `&i2c_AO` camera node.
+`docs/datasheets/vim3-sch-v15.pdf` settles it:
 
-Decompiled before/after trees are in the bundle under `dt/` for review.
+```
+SPDIF_OUT   GPIOAO_10(AO_CEC_A//...//CLK12_24)
+CAM_MCLK
+BF16
+GPIOAO_11(PWMAO_A_HIZ//PWMAO_A//GEN_CLK_EE//GEN_CLK_AO)
+```
 
-The only dtc complaint is a cosmetic duplicate unit-address between
-`isp-adapter@ff650000` and `phy-csi@ff650000`; those regions genuinely overlap
-in the vendor design.
+**CAM_MCLK is GPIOAO_11 (ball BF16), function `GEN_CLK_EE` = mux 4.** GPIOAO_10
+carries SPDIF_OUT on this board. The original comment had taken the ball
+designator `BF16` from the GPIOAO_11 row and paired it with GPIOAO_10's function
+list. Confirmed independently by the vendor pinctrl driver:
+`gen_clk_ee_ao_pins[] = { GPIOAO_11 }; GROUP(gen_clk_ee_ao, 4)`.
 
-## 4. What is still genuinely unknown
+### 3.2 `gen_clk` gate bit is different on G12A/G12B
 
-Two things cannot be settled offline, and were **not** guessed at:
+`HHI_GEN_CLK_CNTL` (0xff63c228) is **not** laid out the same across the family.
+gxbb/axg gate at bit 7; G12A/G12B gate at **bit 11** with a 5-bit parent select.
+Writing bit 7 on G12B lands *inside the divider field* (÷129) and never opens the
+gate — a dead pin. Per the vendor G12A driver:
 
-1. **The sensor's 7-bit I2C address.**  The overlay uses `0x1a`, the IMX415
-   default with SLASEL low (`0x1b` when high).  Worth flagging because an
-   earlier note in this project claimed the vendor tree proves the address is
-   `0x6c` — it does not.  That vendor node is the ARM ISP framework's
-   8-bit-addressed proxy for an **os08a10**, an entirely different sensor.
-   Resolve with `i2cdetect -y -r 0` once the camera is attached.
-2. **PWDN.**  The vendor drives `pwdn = <&gpio_expander 2>`, but the mainline
-   IMX415 binding has no `pwdn` property, so the overlay does not model it.  If
-   the attached module needs PWDN de-asserted to answer on I2C, that has to be
-   done out-of-band before the driver probes.
+```c
+g12a_gen_mux: .mask = 0x1f, .shift = 12   /* sel  [16:12], 0 = xtal */
+g12a_gen_div: .shift = 0, .width = 11     /* div  [10:0], ÷(n+1)   */
+g12a_gen:     .bit_idx = 11               /* gate  bit 11          */
+```
 
-The `*-supply` nodes are deliberately fixed always-on placeholders representing
-"the module regulates itself onboard".  They are not a claim about the board's
-regulator topology, and no fake rail was invented to satisfy a binding.
+Fixing this is what first made the sensor ACK on I2C.
 
-## 5. Deliverable
+### 3.3 Reset was the wrong expander line and the wrong polarity
+
+`vim3-sch-v15.pdf` gives the TCA6408 (U17, 0x20) mapping directly:
+
+| Pin | Net |  | Pin | Net |
+| --- | --- | --- | --- | --- |
+| P2 | **CAM_RESET** | | P4 | CAM_PDN1 |
+| P3 | CAM_PDN0 | | P5 | RED_LED |
+
+P5=RED_LED matches the live `consumer=red:status` on line 5, which confirms the
+numbering. The overlay used **line 3** (CAM_PDN0) with `GPIO_ACTIVE_HIGH`.
+
+Note the vendor DTS labels are swapped relative to the board nets — it calls
+line 3 "reset" and line 2 "pwdn" — but its own IMX415 driver overrides that:
+
+```c
+/* IMX415 PIN21 RESET, defined in dts as 'ircut-gpios' */
+gpio->rst_gpio = gpio->ircut_gpio;     /* = expander line 2 */
+gpiod_set_value_cansleep(gpio->rst_gpio, 1);   /* 1 = run */
+```
+
+IMX415 pin 21 is XCLR, active-low. Mainline requests the line `GPIOD_OUT_HIGH`
+and calls `gpiod_set_value(reset, 0)` to release, so logical-1 must map to
+physical LOW. Correct DT is `<&gpio_expander 2 GPIO_ACTIVE_LOW>`.
+
+### 3.4 `isp_clkc` collided with a clock mainline has since added
+
+It registered a gate named `mipi_isp`. Linux 6.18's `g12a.c:3947` now registers
+an unrelated clock of that name, so `clk_hw_register()` returned `-EEXIST` and
+took the *whole provider* down — which left `ff140000.isp` deferred forever.
+Renamed to `mipi_isp_pclk`. The module's comment claiming these clocks "do not
+exist anywhere in this kernel" was stale; only that one name actually clashes,
+verified against `/sys/kernel/debug/clk` on the running board.
+
+## 4. The V4L2 port bug — systemic, not a one-off
+
+`VIDIOC_G_SELECTION` and `VIDIOC_STREAMON` each oopsed with a NULL deref.
+The cause is the same for both, and it is general:
+
+```c
+/* drivers/media/v4l2-core/v4l2-ioctl.c */
+ret = ops->vidioc_g_selection(file, NULL, p);
+ret = ops->vidioc_streamon(file, NULL, ...);
+```
+
+**99 call sites** in 6.18's `v4l2-ioctl.c` pass a literal `NULL` for the `fh`
+argument. It is effectively deprecated: the handle must come from
+`file->private_data`. NULL is not a race and not an error state — it is
+guaranteed, every call. A `if (!fh) return -ENODEV;` guard therefore *masks* the
+bug rather than fixing it; the handler simply never works.
+
+Most of this driver already read `file->private_data`. Four handlers trusted the
+argument and were converted: `isp_v4l2_g_selection`, `isp_v4l2_s_selection`,
+`isp_v4l2_streamon`, `isp_v4l2_streamoff`, plus `isp_v4l2_g_pixelaspect`. A
+helper `isp_v4l2_fh_of(file)` now centralises it so this cannot recur.
+`isp_v4l2_fop_close()` also gained a NULL guard — dereferencing there is what
+left `v4l2-ctl` stuck in D state after each oops.
+
+Each fix was verified in the disassembly, not just the source, e.g.:
+
+```
+9394:  ldr x20, [x19, #24]   ; file->private_data
+939c:  cmp x20, #0
+93a4:  b.eq → error          ; guard precedes the deref
+93a8:  ldr w6, [x20, #144]   ; sp->stream_id
+```
+
+## 5. Verified working
+
+Clean boot, everything automatic, zero oopses:
+
+```
+isp_clkc ...: registered 7 aux ISP/CSI clocks via shared HHI syscon regmap
+ao_mclk: gen_clk on at 24 MHz (HHI_GEN_CLK_CNTL 0x00690000 -> 0x00680800)
+ao_mclk: GPIOAO_11 mux 0 -> 4 (AO_RTI_PINMUX_REG1 0x03330000 -> 0x03334000)
+imx415 0-001a: Detected IMX415 image sensor
+Matched subdev 'imx415 0-001a' for prefix 'imx415'
+IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000
+AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+```
+
+`/dev/video1` ("juno R2") enumerates 8 formats (RGB4, RGB3, NV12, Y444, YUYV,
+UYVY, GREY, BYR2). Sensor subdev reports 3864x2192 `MEDIA_BUS_FMT_SGBRG10_1X10`.
+Capture at native resolution produces real, in-focus images.
+
+`ao_mclk` keeps the old Radxa path selectable for A/B testing on the bench:
+`modprobe ao_mclk source=clk12_24 pad=10 mux=7`.
+
+Boot ordering is handled by `/etc/modprobe.d/birdcher-camera.conf`
+(`softdep imx415 pre: ao_mclk`) — without it `imx415` probes before INCK exists
+and fails `-ENXIO: failed to get sensor out of standby`.
+
+## 6. Known remaining issues
+
+1. **Downscaled capture is broken.** Requesting 1920x1080 negotiates correctly
+   (stride 1920, 3110400 B) but the ISP's DMA writer stays programmed for full
+   sensor resolution and refuses to write:
+   ```
+   TRACE dma_writer: active 3864x2192 line_offset=3968 frame_size=8697856 buf_size=2076672
+   DMA_WRITER: frame_size greater than available buffer. fr 8697856 vs 2076672
+   ```
+   Buffers come back unfilled, so the output is garbage. **Capture at native
+   3864x2192 (stride 3968) works.** The scaler configuration is not being
+   propagated from `S_FMT` into the ISP pipeline — next thing to fix.
+
+2. **White balance / colour matrix untuned.** Output has a heavy green cast,
+   expected for uncorrected Bayer. Needs AWB/CCM tuning.
+
+3. **Auto-exposure fights you.** The ISP's AE overrides sensor exposure/gain
+   within a frame or two and drives the scene to near-black (exposure written
+   back as 244 of 2242). Early frames are correctly exposed, later ones are not.
+   AE statistics look mis-scaled — likely related to issue 1.
+
+4. **Occasional unfilled buffer** (an all-zero frame) during capture.
+
+5. `VIDIOC_CREATE_BUFS` is not implemented — harmless, `v4l2-ctl` just probes it.
+
+## 7. Reproducing a capture
+
+```sh
+v4l2-ctl -d /dev/video1 \
+  --set-fmt-video=width=3864,height=2192,pixelformat=NV12 \
+  --stream-mmap --stream-count=6 --stream-to=/tmp/cap.raw
+
+# frames are NV12, stride 3968, 13046784 bytes each
+ffmpeg -f rawvideo -pix_fmt nv12 -s 3968x2192 -i /tmp/cap.raw \
+       -vf "crop=3864:2192:0:0" -frames:v 1 out.png
+```
+
+## 8. Deployment
 
 ```
 /mnt/shed/khadas/birdcher-build/vim3-armbian-6.18.44-camera-modules-only/
 ```
 
-SHA256SUMS verified.  `install.sh` is dry-run by default and was exercised
-end-to-end in a sandbox: its guards correctly refuse a wrong kernel release, a
-wrong package version, a wrong base-DTB hash, a tampered bundle, and any module
-name that would shadow an in-tree Armbian module.
-
-## 6. Proposed first boot (not yet executed — needs your go-ahead)
-
-Nothing below overwrites an Armbian-owned file.  It adds two new directories
-and one line to `armbianEnv.txt`.
-
-```sh
-# on the VIM3, with the camera attached and UART console connected
-cd ~/birdcher-deploy/vim3-armbian-6.18.44-camera-modules-only
-sudo ./install.sh              # dry-run, review the output
-sudo ./install.sh --install    # applies; loads nothing, reboots nothing
-sudo reboot
-```
-
-After boot, before loading anything:
-
-```sh
-sudo i2cdetect -y -r 0         # confirm the sensor address is really 0x1a
-```
-
-Then load in dependency order and watch `dmesg`:
-
-```sh
-sudo modprobe isp_clkc && sudo modprobe ao_mclk
-sudo modprobe imx415 && sudo modprobe iv009_isp
-media-ctl -p ; v4l2-ctl --list-devices
-```
-
-If `i2cdetect` shows the sensor at `0x1b` instead, change `reg` and the node
-name in `overlays/vim3-camera-overlay.dts`, rebuild the `.dtbo`, and reinstall —
-no module needs rebuilding for that.
-
-## 7. Rollback
-
-```sh
-sudo ./rollback.sh --uninstall    # dry-run without the flag
-sudo reboot
-```
-
-If the board will not boot: U-Boot already restores the original DT by itself
-when an overlay fails to apply, so it should come up on the stock kernel
-regardless.  Failing that, mount the boot partition elsewhere and delete the
-`user_overlays=` line.  The Armbian kernel, DTB, initramfs and module tree are
-never touched by any of this.
+Installed and running on the board. `install.sh` is dry-run by default and
+verifies kernel release, package version, base-DTB hash, bundle checksums and
+module vermagic before touching anything; it only adds files. Rollback:
+`sudo ./rollback.sh --uninstall`. The Armbian kernel, DTB, initramfs and module
+tree were never modified — confirmed by SHA-256 after install.
