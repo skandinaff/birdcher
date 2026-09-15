@@ -1,3 +1,9 @@
 [submodule "external/radxa-zero2pro-camera"]
 	path = external/radxa-zero2pro-camera
 	url = https://github.com/skandinaff/radxa-zero2pro-camera.git
+[submodule "external/khadas-common_drivers"]
+	path = external/khadas-common_drivers
+	url = https://github.com/khadas/common_drivers.git
+	branch = khadas-vims-5.15.y
+	ignore = all
+	shallow = false

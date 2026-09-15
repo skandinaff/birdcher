@@ -7,13 +7,21 @@ no enlarged FR buffers, no undocumented register pokes.
 
 Reference revision: `3a11a86`.
 
-**2026-09-15 continuation:** the comparison below missed a functional difference:
-Khadas calls `crop_resolution_changed()` in `crop_set_resize_enable()` before
-raising `event_id_crop_changed`; this port did not. Restoring that call produces
-the 1920x1080 scaler-update trace before buffer arming and preserves FR capture,
-but a fresh-load DS1 capture still hangs the board. See the continuation section
-in [the handover](tasks/2026-09-15-ds1-1080p-handover.md) for evidence and the next
-hardware-register check. DS1 bring-up is **not complete**.
+**RESOLVED 2026-09-15. DS1 1920x1080 works.** This page is kept for its
+reference comparison, which is accurate; its conclusions about the blocker are
+superseded by [the handover](tasks/2026-09-15-ds1-1080p-handover.md).
+
+The scaler was never the blocker. Restoring the missing `crop_resolution_changed()`
+call in `crop_set_resize_enable()` (commit `e1731d1`) fixed the scaler
+configuration, and a hardware register dump then confirmed it: `0x18ec8` bit 1
+clear, in/out geometry 3864x2192 -> 1920x1080 and matching increments in both
+ping and pong banks. Three unrelated bugs stood behind it -- Temper left in the
+datapath doing DMA against address 0, the CSI-2 receive path never brought back
+up for a DS1-only stream, and the ISP being quiesced but never re-armed. All
+three are fixed; see the handover.
+
+The "Root cause found" framing elsewhere on this page overstates the case for
+the stride bug: it was necessary, not sufficient.
 
 ## Why FR cannot do this
 
