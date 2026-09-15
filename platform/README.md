@@ -46,16 +46,33 @@ work, power and heat for identical delivered output. Ask for the rate you want.
 
 Nothing here persists: a module reload or reboot returns the sensor to 60 fps
 and every ISP control to its default. `preview-ctl.sh start` re-applies the
-frame rate for that reason; anything else that cares must do the same.
+frame rate and the measured indoor image profile for that reason; anything
+else that cares must do the same.
 
 ## Preview
 
 ```sh
-preview-ctl.sh start [seconds] [fps]   # also sets the sensor rate
+preview-ctl.sh start [seconds] [fps]   # also sets sensor rate/exposure/gain
 preview-ctl.sh stop
 preview-ctl.sh restart
 preview-ctl.sh status
 ```
+
+The default indoor profile uses a 10 ms exposure (`1350` sensor lines) and 18
+dB analogue gain (`96` in the ISP's log2 x32 units). The shutter is one 50 Hz
+half-cycle, so artificial lighting does not beat against it. Override either
+value for measured experiments without editing the script:
+
+```sh
+BIRDCHER_EXPOSURE_LINES=1350 BIRDCHER_ANALOG_GAIN=80 \
+    preview-ctl.sh start 3600 30
+```
+
+This profile is deterministic because the userspace 3A daemon is absent and
+automatic exposure does not raise sensor gain. The calibration now uses the
+ARM/Khadas photographic gamma curve rather than the former exact-linear CV
+curve. Measurements and remaining limits are in
+[`docs/camera/image-tuning.md`](../docs/camera/image-tuning.md).
 
 It runs as a transient systemd unit, because a backgrounded ssh command does
 not reliably survive this board's WiFi. `ffmpeg -listen 1` serves one client at

@@ -1,7 +1,8 @@
 # Handover: camera + live preview, end of 2026-09-15
 
-Tree clean at `22150d1`. Read [../STATUS.md](../STATUS.md) first; this page is
-only what a next session needs that is not obvious from the code.
+Read [../STATUS.md](../STATUS.md) first; this page contains only what a next
+session needs that is not obvious from the code. It includes the indoor image
+tuning completed after the original streaming handover.
 
 ## Where the project is
 
@@ -19,6 +20,9 @@ sudo ~/birdcher-tools/preview-ctl.sh start|stop|restart|status
 # -> http://192.168.1.38:8090/
 ```
 
+`start` restores the measured 30 fps indoor profile: 10 ms exposure and 18 dB
+analogue gain. See [../camera/image-tuning.md](../camera/image-tuning.md).
+
 Tools live in `platform/camera/tools/`, built on the board in
 `~/birdcher-tools/` with `gcc -O2 -o X X.c`. Board tools are copies; edit in
 the repo and scp.
@@ -30,9 +34,9 @@ the repo and scp.
    which is why `ffmpeg -i /dev/video1` does not give you DS1. Only one process
    may stream; a leftover capture makes the next one silently pick up the wrong
    streams. This cost an hour of misdiagnosis that looked like an ffmpeg bug.
-2. **Nothing persists.** A module reload or reboot resets the sensor to 60 fps
-   and every ISP control to default. `preview-ctl.sh start` re-applies the rate;
-   anything else must too.
+2. **Runtime controls do not persist.** A module reload or reboot resets the
+   sensor to 60 fps and every ISP control to default. `preview-ctl.sh start`
+   re-applies the rate, exposure and gain; any other camera owner must too.
 3. **The WiFi link drops constantly** — roughly every other ssh command returned
    nothing during this work. Long-running work goes under `systemd-run`, and
    results get written to a file, not a terminal.
@@ -49,13 +53,16 @@ the repo and scp.
 - 51 camera controls, all set/read-back verified, ISP path confirmed to reach
   pixels (brightness 16/128/240 -> Y mean 0.3/42.7/209.4). See
   [../camera/controls.md](../camera/controls.md).
+- Indoor profile after photographic gamma + 50 Hz correction: whole-frame Y
+  mean 78.8, far half 19.9, near half 137.8, with 0.505% above Y=250. Preview
+  read-back: exposure 1350 lines, sensor gain 60 (18 dB).
 
 ## Open
 
-- **Image quality / 3A.** Green cast. AE/AWB are open loops because the ISP
-  expects a userspace algorithm daemon over sbuf that does not exist here.
-  Per architecture §5.3, find the Khadas 3A path before hand-tuning. Manual AWB
-  gains do work and are the only colour correction available today.
+- **Image colour / adaptive 3A.** Static indoor brightness is fixed and usable.
+  A green cast remains because AE/AWB are open loops and WB/CCM are neutral.
+  Per architecture §5.3, find the Khadas 3A path before hand-tuning colour.
+  Manual AWB gains do work and are the only colour correction available today.
 - **Preview serves one client** (`ffmpeg -listen 1`); it restarts per client so
   a refresh reconnects, but two viewers cannot watch at once. Fan-out is a
   later measurement-driven transport decision.

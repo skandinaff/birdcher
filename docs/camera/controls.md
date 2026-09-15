@@ -77,6 +77,22 @@ rate. Do not offer it as the frame-rate control.
 Rate matters thermally. At 60 fps the hottest SoC zone peaked at 65.6 C; at
 15 fps, 50.6 C, for identical delivered output.
 
+## Current indoor image profile
+
+`preview-ctl.sh start` applies a deterministic profile after setting the frame
+rate:
+
+| Setting | ISP request | Sensor read-back | Meaning |
+| --- | --- | --- | --- |
+| exposure | `sensor_integration_timet_set=1350` | `exposure=1350` | 10 ms at 135000 lines/s; 50 Hz-safe |
+| analogue gain | `sensor_analog_gain_set=96` | `analogue_gain=60` | 3 log2 stops = 8x = 18 dB |
+| digital gains | `0` | — | no digital amplification |
+
+The two gain controls use different units: the ISP request is log2(gain) x32,
+while the sensor subdev reports 0.3 dB steps. Environment variables
+`BIRDCHER_EXPOSURE_LINES` and `BIRDCHER_ANALOG_GAIN` override the defaults for
+experiments. Full measurements are in [image-tuning.md](image-tuning.md).
+
 ## Caveats for whoever builds the UI
 
 - **These are runtime settings and do not persist.** A module reload or reboot
@@ -84,8 +100,9 @@ Rate matters thermally. At 60 fps the hottest SoC zone peaked at 65.6 C; at
   changes has to be re-applied on start.
 - **AE and AWB are open loops.** The ISP's 3A expects a userspace algorithm
   daemon over sbuf that does not exist here, so `white_balance_automatic=1`
-  does not converge and the image keeps its green cast. The manual gain
-  controls do work, which makes them the only way to correct colour today.
+  does not converge and the image keeps its green cast. `preview-ctl.sh`
+  therefore applies the fixed exposure/gain profile above. Manual AWB gains do
+  work, which makes them the only way to correct colour today.
   Per architecture §5.3, understand the Khadas 3A path before treating manual
   gains as the fix — but they are legitimate as a UI feature.
 - **One owner for the camera.** Controls are per-device and safe to change from

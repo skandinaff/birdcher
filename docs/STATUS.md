@@ -20,6 +20,7 @@ IMX415 ──CSI-2(4 lane)──> G12B ISP ──> V4L2 /dev/video1
 | Capture node | `/dev/video1`, streams by open order: 0=FR, 1=META, 2=DS1 |
 | Working mode | DS1 1920x1080 NV12, bpl 1920, 2073600 + 1036800 |
 | Frame rate | **30 fps** (`vertical_blanking=2308`, measured 29.81, 0 drops). A control, not a constant: `135000/fps - 2192`. Runtime only -- resets on reload |
+| Indoor image profile | **10 ms exposure + 18 dB analogue gain**, applied by `preview-ctl.sh`; 50 Hz antiflicker and ARM/Khadas photographic gamma are built into `iv009_isp.ko` |
 | Controls | 51 verified working (42 ISP + 9 sensor) incl. AWB gains, focus, gains, EV. See [camera/controls.md](camera/controls.md) |
 | Measured | 642 s at 60 fps and 240 s at 15 fps, both `frozen=0 short=0 timeouts=0`, no memory drift, no kernel complaints |
 
@@ -30,7 +31,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 
 | Item | State |
 | --- | --- |
-| **Image colour** | Green cast. AWB/AE/AF are open loops — see below. Not a DS1 problem: FR shows the same cast. |
+| **Image colour** | Indoor brightness is usable after the measured fixed exposure/gain and gamma change. A green cast remains because AWB/CCM are still neutral — see below. Not a DS1 problem: FR shows the same cast. |
 | **Long-run stability** | Measured to ~11 min, not the 30 in the roadmap. No leak: Slab flat to +-0.2 MB, MemAvailable drifts both ways. Longer runs still welcome. |
 | **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
@@ -53,12 +54,13 @@ statistics generation  OK
 userspace 3A daemon    MISSING  ->  AWB never updates, AE partial, AF absent
 ```
 
-So the next camera-quality task is **not** "fix the green tint". It is: find
-the original Khadas/Amlogic userspace 3A stack and establish what AE/AWB/AF
-actually depend on it. Khadas Ubuntu 5.15 produced a good image, so the chain
-existed — find it, then port or replace deliberately. Do not hand-tune
-calibration to compensate for an algorithm that never runs, and do not invent
-an AWB.
+The brightness failure is now bounded and worked around deliberately: the old
+exact-linear CV gamma has been replaced with the ARM/Khadas photographic curve,
+antiflicker matches the deployment's 50 Hz mains, and preview startup applies
+a measured 10 ms / 18 dB profile. See
+[camera/image-tuning.md](camera/image-tuning.md). Recovering scene-adaptive
+AE/AWB/AF still requires finding the original Khadas/Amlogic userspace 3A path
+or replacing it deliberately. Manual settings remain the fallback until then.
 
 ## Two tracks from here
 
@@ -102,7 +104,8 @@ verdict to `/tmp/preview-verify.txt`.
 - **Track A (primary)** — the Birdcher application on the DS1 input:
   capture -> live preview -> recording -> frame distributor -> NPU inference.
   See [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
-- **Track B (secondary)** — camera quality via the 3A investigation above.
+- **Track B (secondary)** — colour and adaptive camera quality via the 3A
+  investigation above; static indoor brightness is now usable.
 
 Track A is not blocked on Track B. The scaler is finished; leave it alone.
 

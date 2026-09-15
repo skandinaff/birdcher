@@ -1,4 +1,10 @@
-# ISP calibration audit (read-only)
+# ISP calibration audit (original read-only audit)
+
+> **2026-09-15 update:** the scaler was fixed and the requested indoor
+> brightness tuning was then measured on hardware. The exact-linear gamma LUT
+> identified below was replaced by the ARM/Khadas photographic curve, and
+> antiflicker was corrected from 60 to 50 Hz. The audit remains the historical
+> baseline; see [image-tuning.md](image-tuning.md) for the change and evidence.
 
 Scope: find out what the shipped IMX415 calibration actually contains and
 where each part came from. **Nothing was tuned, replaced or disabled.** This
