@@ -6,11 +6,18 @@
  * FR at 3864x2192. This opens the node three times, streams the third handle,
  * and writes raw NV12 frames to stdout.
  *
- *   ds1stream <seconds> <out_fps> [width] [height]
+ *   ds1stream <seconds> <out_fps> [width] [height] [native_fps]
  *
  * Capture always runs at the sensor's native rate; out_fps decimates on the
  * way to stdout, because 1920x1080 NV12 at 60 fps is ~186 MB/s down the pipe
  * and the encoder does not need it.
+ *
+ * native_fps is what the sensor is actually producing (default 60). It is not
+ * fixed: the imx415 subdev's vertical_blanking control sets the frame period,
+ * and lowering the sensor to the rate you actually want is much cheaper than
+ * capturing at 60 and discarding frames. At VBLANK 6808 the sensor runs at
+ * 15 fps, and then out_fps 15 needs no decimation at all. Pass out_fps 0 (or
+ * >= native) to disable decimation outright.
  *
  * Capture statistics go to stderr, never stdout: sequence-gap drops, short
  * frames, select timeouts, and a mean-absolute-difference against the previous
@@ -31,7 +38,7 @@
 #include <linux/videodev2.h>
 
 #define NBUF 4
-#define NATIVE_FPS 60
+#define NATIVE_FPS 60   /* default only; see native_fps argument */
 #define MAD_STRIDE 64
 
 static volatile sig_atomic_t stop_now = 0;
@@ -80,7 +87,10 @@ int main(int argc, char **argv)
     int out_fps = argc > 2 ? atoi(argv[2]) : 15;
     int w       = argc > 3 ? atoi(argv[3]) : 1920;
     int h       = argc > 4 ? atoi(argv[4]) : 1080;
-    int decim   = out_fps > 0 ? (NATIVE_FPS + out_fps / 2) / out_fps : 1;
+    int native  = argc > 5 ? atoi(argv[5]) : NATIVE_FPS;
+    int decim;
+    if (native < 1) native = NATIVE_FPS;
+    decim = (out_fps > 0 && out_fps < native) ? (native + out_fps / 2) / out_fps : 1;
     int fr, meta, ds1;
     struct v4l2_format f;
     struct v4l2_requestbuffers rb;
@@ -114,7 +124,7 @@ int main(int argc, char **argv)
             f.fmt.pix_mp.width, f.fmt.pix_mp.height,
             f.fmt.pix_mp.plane_fmt[0].bytesperline,
             f.fmt.pix_mp.plane_fmt[0].sizeimage, f.fmt.pix_mp.plane_fmt[1].sizeimage,
-            NATIVE_FPS, decim, NATIVE_FPS / decim, secs);
+            native, decim, native / decim, secs);
 
     memset(&rb, 0, sizeof rb);
     rb.count = NBUF; rb.type = type; rb.memory = V4L2_MEMORY_MMAP;
