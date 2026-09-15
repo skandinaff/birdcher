@@ -19,7 +19,8 @@ IMX415 ──CSI-2(4 lane)──> G12B ISP ──> V4L2 /dev/video1
 | Modules | `isp_clkc.ko`, `imx415.ko` (upstream, unmodified), `iv009_isp.ko` |
 | Capture node | `/dev/video1`, streams by open order: 0=FR, 1=META, 2=DS1 |
 | Working mode | DS1 1920x1080 NV12, bpl 1920, 2073600 + 1036800 |
-| Frame rate | **a control, not a constant.** Sensor defaults to 60 fps; imx415 `vertical_blanking` sets it (6808 -> 15 fps) and the ISP does not override it |
+| Frame rate | **30 fps** (`vertical_blanking=2308`, measured 29.81, 0 drops). A control, not a constant: `135000/fps - 2192`. Runtime only -- resets on reload |
+| Controls | 51 verified working (42 ISP + 9 sensor) incl. AWB gains, focus, gains, EV. See [camera/controls.md](camera/controls.md) |
 | Measured | 642 s at 60 fps and 240 s at 15 fps, both `frozen=0 short=0 timeouts=0`, no memory drift, no kernel complaints |
 
 Verified: cold boot -> FR, cold boot -> DS1, FR->DS1, DS1->DS1, several cycles,
@@ -60,6 +61,14 @@ calibration to compensate for an algorithm that never runs, and do not invent
 an AWB.
 
 ## Two tracks from here
+
+### Camera controls
+
+51 controls across two surfaces, all set/read-back verified, and the ISP path
+confirmed to reach pixels (brightness 16/128/240 -> frame Y mean
+0.3/42.7/209.4). Enumerate as JSON with
+`platform/camera/tools/vim3-camera-controls.sh`. Full catalogue and UI notes in
+[camera/controls.md](camera/controls.md).
 
 ### Streaming, measured
 
