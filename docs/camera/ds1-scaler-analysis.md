@@ -9,7 +9,7 @@ Reference revision: `3a11a86`.
 
 **RESOLVED 2026-09-15. DS1 1920x1080 works.** This page is kept for its
 reference comparison, which is accurate; its conclusions about the blocker are
-superseded by [the handover](tasks/2026-09-15-ds1-1080p-handover.md).
+superseded by [the handover](../tasks/2026-09-15-ds1-1080p-handover.md).
 
 The scaler was never the blocker. Restoring the missing `crop_resolution_changed()`
 call in `crop_set_resize_enable()` (commit `e1731d1`) fixed the scaler

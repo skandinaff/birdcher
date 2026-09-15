@@ -37,7 +37,7 @@ patches `3034a00a66799285`, config `0dacf821bddd39b7`, config-hook
 `1c3a9337c4583b24` — and yielded Linux revision
 `1efe5d048a391de3ead2804b2e7f86376c356cc5`.  Identical content is stronger
 evidence than an identical commit id would have been.  See
-[`BUILD_PROVENANCE.md`](BUILD_PROVENANCE.md).
+[`build-provenance.md`](build-provenance.md).
 
 ## Boot path and immutable baseline
 

@@ -36,7 +36,7 @@ identifier the installed package records was reproduced bit-for-bit:
 This is stronger evidence than a matching commit id would have been: it shows
 the produced source *content* is identical, not merely that the inputs looked
 similar.  The provenance gap recorded earlier in
-[`armbian-kernel-base.md`](armbian-kernel-base.md) is therefore **closed**.
+[`armbian-base.md`](armbian-base.md) is therefore **closed**.
 
 | Item | Value |
 | --- | --- |

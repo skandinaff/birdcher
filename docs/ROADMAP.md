@@ -1,5 +1,15 @@
 # Khadas VIM3 Bird Camera Project — Implementation Plan
 
+> **Progress, 2026-09-15.** Phase 0 DONE. Phase 1 DONE (and far exceeded: the
+> CSI receiver and ISP had to be ported, not just configured — see
+> [STATUS.md](STATUS.md)). Phase 2 NOT DONE — capture works but the 30-minute
+> stability run has not been made. Phase 3 NOT STARTED, and reshaped by one
+> finding: the A311D **has** H.264/HEVC/JPEG hardware encoders, but **mainline
+> exposes none of them** (vendor drivers exist in `media_modules`), so encoding
+> is software until someone ports them. See
+> [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
+> Phases 4-10 unchanged.
+
 ## Goal
 
 Build a headless bird-observation system on a **Khadas VIM3** running **Armbian**.
@@ -42,7 +52,9 @@ The exact CSI camera sensor is not yet specified. Detect the sensor and availabl
 
 ---
 
-# Phase 0 — Collect Baseline Information
+# Phase 0 — Collect Baseline Information  ✅ DONE
+
+> Recorded in `hardware/baseline.md` and `kernel/baseline.md`.
 
 Before installing or changing anything, save the complete baseline.
 
@@ -83,7 +95,11 @@ Do not make destructive bootloader, SPI, eMMC, or Device Tree changes during thi
 
 ---
 
-# Phase 1 — Bring Up the CSI Camera
+# Phase 1 — Bring Up the CSI Camera  ✅ DONE
+
+> Result in `camera/bringup-status.md`. Real frames captured; DS1 1920x1080
+> NV12 is the working mode. The assumption that this was a configuration job
+> was wrong — no mainline G12B CSI/ISP existed and it had to be ported.
 
 This is the first major milestone.
 
@@ -196,7 +212,11 @@ The phase is complete only when:
 
 ---
 
-# Phase 2 — Stable Continuous Video Capture
+# Phase 2 — Stable Continuous Video Capture  ⬜ NOT DONE
+
+> Capture works; the 30-minute proof does not exist yet. Longest run 70 s
+> (4195 frames, 59.91 fps, 6 drops, 0 timeouts). `tools/ds1soak.c` does the
+> measuring. Memory growth is the open question.
 
 Before ML or web streaming, prove that video capture is stable.
 
@@ -242,7 +262,12 @@ Document the stable capture pipeline.
 
 ---
 
-# Phase 3 — Browser Live Stream
+# Phase 3 — Browser Live Stream  ⬜ NOT STARTED
+
+> **Reshaped:** the "investigate hardware encoding" question below is answered.
+> The silicon has `amvenc_avc`, `cnm HevcEnc` and `jpegenc`; mainline exposes
+> none of them. Encoding is software until someone ports the vendor drivers,
+> and that software cost competes with the NPU budget. See the streaming task.
 
 Goal:
 
@@ -313,7 +338,7 @@ If no reliable hardware encoder exists, initially use software encoding at a con
 
 ---
 
-# Phase 4 — Validate the A311D NPU
+# Phase 4 — Validate the A311D NPU  ⬜ NOT STARTED
 
 Do this independently from the camera pipeline.
 
