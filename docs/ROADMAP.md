@@ -215,7 +215,7 @@ The phase is complete only when:
 # Phase 2 — Stable Continuous Video Capture  ⬜ NOT DONE
 
 > Capture works; the 30-minute proof does not exist yet. Longest run 70 s
-> (4195 frames, 59.91 fps, 6 drops, 0 timeouts). `tools/ds1soak.c` does the
+> (4195 frames, 59.91 fps, 6 drops, 0 timeouts). `platform/camera/tools/ds1soak.c` does the
 > measuring. Memory growth is the open question.
 
 Before ML or web streaming, prove that video capture is stable.

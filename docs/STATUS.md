@@ -18,8 +18,9 @@ IMX415 ──CSI-2(4 lane)──> G12B ISP ──> V4L2 /dev/video1
 | Kernel | `6.18.44-current-meson64`, **stock, no rebuild** |
 | Modules | `isp_clkc.ko`, `imx415.ko` (upstream, unmodified), `iv009_isp.ko` |
 | Capture node | `/dev/video1`, streams by open order: 0=FR, 1=META, 2=DS1 |
-| Working mode | DS1 1920x1080 NV12, 60 fps, bpl 1920, 2073600 + 1036800 |
-| Measured | 4195 frames, 59.91 fps, 0 timeouts, 0 short frames, 6 drops (0.14%) |
+| Working mode | DS1 1920x1080 NV12, bpl 1920, 2073600 + 1036800 |
+| Frame rate | **a control, not a constant.** Sensor defaults to 60 fps; imx415 `vertical_blanking` sets it (6808 -> 15 fps) and the ISP does not override it |
+| Measured | 642 s at 60 fps and 240 s at 15 fps, both `frozen=0 short=0 timeouts=0`, no memory drift, no kernel complaints |
 
 Verified: cold boot -> FR, cold boot -> DS1, FR->DS1, DS1->DS1, several cycles,
 correct NV12 size/stride, no Oops or WARN while streaming.
@@ -29,7 +30,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | Item | State |
 | --- | --- |
 | **Image colour** | Green cast. AWB/AE/AF are open loops — see below. Not a DS1 problem: FR shows the same cast. |
-| **Long-run stability** | Unmeasured. Longest run is 70 s. `tools/ds1soak.c` exists; `./ds1soak 2700 1920 1080`. |
+| **Long-run stability** | Measured to ~11 min, not the 30 in the roadmap. No leak: Slab flat to +-0.2 MB, MemAvailable drifts both ways. Longer runs still welcome. |
 | **Streaming / app** | Not started. This is the next phase. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
@@ -59,6 +60,27 @@ calibration to compensate for an algorithm that never runs, and do not invent
 an AWB.
 
 ## Two tracks from here
+
+### Streaming, measured
+
+DS1 -> MJPEG -> HTTP works (`platform/camera/tools/mjpeg-soak.sh`). ffmpeg
+cannot open DS1 itself -- stream ids come from open order -- so
+`ds1stream.c` bridges it. Encoded MJPEG at 1920x1080 q7 runs **4.7-5.9
+Mbit/s** at 15 fps, ~45 kB/frame.
+
+Running the sensor at the rate actually wanted, rather than 60 fps with
+frames discarded, is worth about 15 C:
+
+| | 60 fps, decimated to 15 | 15 fps native |
+| --- | --- | --- |
+| captured | 59.44 fps | 14.88 fps |
+| drops | 379 (171 in minute 1) | 29 |
+| CPU avg | 26.6 % | 19.9 % |
+| hottest zone | **65.6 C** peak | **50.6 C** peak |
+
+The CPU saving is modest because MJPEG encoding dominates and that happens at
+15 fps either way. The thermal saving is large because the sensor and ISP stop
+doing 4x the readout and processing. Browser viewing is **not yet verified**.
 
 - **Track A (primary)** — the Birdcher application on the DS1 input:
   capture -> live preview -> recording -> frame distributor -> NPU inference.
