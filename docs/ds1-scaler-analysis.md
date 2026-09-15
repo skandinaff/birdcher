@@ -34,7 +34,7 @@ FR can ever produce, and 1080p has to come from DS1.
 | `fw_intf_stream_start()` | **REGRESSION — fixed**, see below |
 | `fw_intf_stream_stop()` | DS1 branch present. Reference takes `stream_on_count` and stops the sensor from either branch when the last stream goes; this port substitutes a local `fr_stream_active` and does not stop the sensor on DS1 teardown |
 | `dma_ds1` queue selection (`isp-vb2.c`) | Identical. The reference's second `d_type = dma_ds1` site is inside `#ifdef AUTOWRITE_MODULES_V4L2_API`, which is not built |
-| Buffer sizing / stride | Identical |
+| Buffer sizing / stride | **REGRESSION — fixed.** Sizes are identical, but the *stride* handoff was not: `isp_vb_to_tframe()` never set `line_offset`, and the pipe-enable path never programmed it. See "Root cause found" below |
 
 Beyond the eight, the runtime DS1 plumbing was also compared:
 
@@ -124,7 +124,97 @@ Characteristics:
 Both configurations fail: DS1 alone crashes as above; FR and DS1 concurrently
 also hangs the board (UART last showed `AM_ADAP: reader/frontend : width = 3864`).
 
-## Leading hypothesis for next session
+## The DMA stride was never programmed — necessary, but not the whole fault
+
+> **Superseded in part, 2026-09-15.** What follows is accurate about the
+> mechanism it describes and about the reference comparison, and the fix is
+> committed and verified on FR. But it is **not** a complete explanation: DS1
+> still corrupts memory with the stride correct. The live hypothesis is that
+> `crop_func.c: _update_ds()` never runs, leaving the downscaler bypassed while
+> the DMA writer expects 1920x1080. See
+> `docs/tasks/2026-09-15-ds1-1080p-handover.md`, which also lists several
+> conclusions on this page and elsewhere that were later falsified.
+
+The 2026-09-15 pass widened the reference diff past the eight areas, into the
+buffer-handoff path, and found the corruption source. It is two halves of one
+omission, and each half makes the other look harmless:
+
+**1. `isp-vb2.c: isp_vb_to_tframe()` never set `line_offset`.** The Khadas
+reference (`isp-vb2.c:154,159`, `isp_vb_mmap_cvt()`) fills both
+`frame->primary.line_offset` and `frame->secondary.line_offset` from
+`pstream->cur_v4l2_fmt.fmt.pix_mp.plane_fmt[0].bytesperline`. Ours set only
+`address` and `size`, so every tframe reached the firmware with a stride of 0
+left over from the caller's `memset`.
+
+**2. `dma_writer.c: dma_writer_write_frame_queue()` dropped the stride
+writes.** The reference's "dma re-enabling" block programs the writer's stride
+register before arming it (`dma_writer.c:293` primary, `:299` UV). Both calls
+were missing here. The only surviving `line_offset_write()` calls are in the
+per-frame path in `dma_writer_pipe_update()` — one frame too late.
+
+So the DMA writer was armed for the *first* frame with whatever stride the
+register happened to hold, from whatever geometry was programmed last. For FR
+that is survivable: the stale value already describes a full-resolution frame
+and the buffer is full-resolution too. For a 1920x1080 DS1 buffer sitting
+behind a 3864-wide pipe it means the ISP writes ~8.7 MB into a 2.07 MB
+allocation — 6.6 MB of kernel memory destroyed by hardware, from frame 0.
+
+That matches the captured crash exactly, and explains its strangest feature:
+the `Modules linked in:` line in `docs/logs/ds1-streamon-crash-uart.log` is
+itself corrupted, degenerating mid-list into UTF-8 garbage. The module names
+are ordinary kernel memory; they had already been overwritten *before* the oops
+handler ran. Add the simultaneous aborts on several CPUs and the
+`Insufficient stack space to handle exception!` banner, and this is not a bad
+pointer in driver code — it is a DMA engine scribbling over the kernel.
+
+Note also that the enable block has **no size check at all**, unlike the
+per-frame path, which does compare `frame_size` against `primary.size`. So the
+one arming site that could not validate its geometry was also the one that
+stopped programming it.
+
+### What was changed
+
+- `isp-vb2.c` — `isp_vb_to_tframe()` now takes `pstream` and sets
+  `line_offset` on both planes from the negotiated `bytesperline`, matching the
+  reference. (The reference's equivalent takes `pstream` for the same reason.)
+- `dma_writer.c` — restored both `line_offset_write()` /
+  `line_offset_write_uv()` calls in the enable block.
+- `dma_writer.c` — **not upstream**: a guard that refuses to arm the pipe when
+  `stride * height` exceeds the buffer, logs loudly, and leaves the writer
+  disabled. Given that this failure mode takes the whole board down with no
+  recoverable log, a mismatch should become a message, not a reset.
+
+### Verified on hardware
+
+FR, after the fix:
+
+```
+TRACE wfq: type=0 len=1 enabled=0 init=1 3864x2192 stride=3968 bufsz=8699904
+TRACE dma arm: pipe=0 3864x2192 stride=3968 need=8697856 have=8699904
+```
+
+The stride now arrives as 3968 (it was 0 before) and the arm check passes.
+FR capture is unaffected.
+
+**DS1 is not yet verified end to end.** The session lost access to the board
+before the 1080p run could be made, so it is still unknown whether the DS1
+pipe's `settings.width/height` actually follow the negotiated 1920x1080. The
+guard makes that observable rather than fatal: if the pipe is still configured
+for 3864x2192 while the buffer is 1080p, the next run logs
+
+```
+refusing to arm pipe 1 -- 3864x2192 stride 1920 needs ... bytes, buffer is 2073600
+```
+
+instead of corrupting memory — which would then point at the crop/scaler
+geometry as the remaining problem rather than at the DMA writer.
+
+## Earlier hypothesis (now superseded)
+
+Kept for the record: the single-context flattening below was the leading theory
+before the stride omission was found. It is no longer needed to explain the
+crash, and should only be revisited if DS1 still misbehaves after the geometry
+is confirmed.
 
 This is **not** a dropped line in the eight areas audited — those are faithful.
 The most likely systemic cause is the **single-context flattening** of the
@@ -135,14 +225,20 @@ dma pipe settings (`pipe->settings.ctx_id`), while this port removed it.
 because it is context 0 and the default everywhere; DS1 may be reaching
 per-context state that the flattening left uninitialised.
 
-Suggested next steps, in order:
+## Next steps
 
-1. Instrument the DS branch of `dma_writer_pipe_process_interrupt()` and
-   `frame_buffer_*` to print pipe/ctx pointers *before* any dereference, and
-   re-run with UART capture started first.
-2. Compare `acamera_fw.c` (1021 changed lines) and `acamera_fsm_mgr.c` around
-   per-context buffer/pipe state, specifically anything keyed on `ctx_id` that
-   became a single global here.
+1. Run `~/birdcher-tools/ds1run 1920 1080 6 /tmp/ds1.raw` on the board with the
+   rebuilt `iv009_isp.ko` and read back the `TRACE wfq` / `TRACE dma arm` /
+   `refusing to arm` lines. Three outcomes, all informative:
+   - armed with stride 1920 and frames arrive → DS1 works, render and check.
+   - `refusing to arm` → the DS1 pipe geometry is not following the negotiated
+     format; chase `crop_info.width_ds/height_ds` and the `IMAGE_RESIZE_*`
+     path next.
+   - no DS trace at all → the DS1 pipe is never reconfigured; chase
+     `frame_buffer_configure()`.
+2. Only if DS1 still misbehaves with correct geometry: compare `acamera_fw.c`
+   (1021 changed lines) and `acamera_fsm_mgr.c` around per-context buffer/pipe
+   state, for anything keyed on `ctx_id` that became a single global here.
 3. Confirm whether upstream ever runs DS1 standalone, or always alongside FR —
    `fw_intf_stream_stop()`'s `stream_on_count` guard suggests concurrent use is
    the expected mode.
@@ -158,6 +254,14 @@ does not survive a hard reset):
   captures from it.
 - `bothcap.c` — streams FR and DS1 concurrently, draining FR to keep the
   pipeline running, dequeuing from DS1.
+- `ds1arm.c` — opens the three handles, sets the DS1 format, REQBUFs and QBUFs,
+  then stops *before* STREAMON. Useful to confirm negotiation without any risk,
+  but note it cannot observe the DMA arming: vb2 only hands queued buffers to
+  the driver inside `vb2_start_streaming()`, so `dma_writer_write_frame_queue()`
+  is not reached until STREAMON.
+- `ds1run.c` — the real test: same setup plus STREAMON, a `select()`-guarded
+  DQBUF loop with a 5 s timeout, and an optional raw NV12 dump of the last
+  frame. `./ds1run 1920 1080 6 /tmp/ds1.raw`. Not yet built on the board.
 
 UART: `/dev/ttyUSB0` at 115200. Raise the console loglevel first
 (`dmesg -n 8`), or nothing reaches it. Start the reader **before** the test —
