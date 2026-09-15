@@ -7,6 +7,14 @@ no enlarged FR buffers, no undocumented register pokes.
 
 Reference revision: `3a11a86`.
 
+**2026-09-15 continuation:** the comparison below missed a functional difference:
+Khadas calls `crop_resolution_changed()` in `crop_set_resize_enable()` before
+raising `event_id_crop_changed`; this port did not. Restoring that call produces
+the 1920x1080 scaler-update trace before buffer arming and preserves FR capture,
+but a fresh-load DS1 capture still hangs the board. See the continuation section
+in [the handover](tasks/2026-09-15-ds1-1080p-handover.md) for evidence and the next
+hardware-register check. DS1 bring-up is **not complete**.
+
 ## Why FR cannot do this
 
 `fw_intf_stream_set_resolution()` says so in upstream's own words:
@@ -42,8 +50,9 @@ Beyond the eight, the runtime DS1 plumbing was also compared:
 - `dma_writer.c`, `dma_writer_func.c` — differences are formatting, `vmalloc`
   vs stack allocation of `dma_pipe_settings`, and extra logging. Same logic,
   same DS1 IRQ masks (`ACAMERA_IRQ_FRAME_WRITER_DS`, `ACAMERA_IRQ_FRAME_DROP_DS`).
-- `crop_fsm.c` / `crop_func.c` — differences are **entirely brace-style and
-  whitespace**, plus extra `LOG()` lines. The scaler FSM is faithfully ported.
+- `crop_fsm.c` / `crop_func.c` — the original comparison missed the dropped
+  `crop_resolution_changed()` call in `crop_set_resize_enable()`. Restored in
+  the continuation; the interrupt path only updates on FR writer completion.
 - `frame_buffer_update_callback()` and its single caller in `dma_writer_fsm.c`
   — identical, so DS callback registration is not missing.
 - `ISP_HAS_CROP_FSM` is 1 in both, so the `crop_info.width_ds = width_fr`

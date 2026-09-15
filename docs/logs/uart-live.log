@@ -572,3 +572,1436 @@ khadas-vim3 login: [  218.170203] fw_module_exit@main_kernel_juno_v4l2.c:934 GEN
 [  228.928809] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
 [  228.928812] Stream off 0
 [  228.937493] 
+[ 1549.000424] DS1_BASELINE_20260915
+[ 1549.014737] fw_module_exit@main_kernel_juno_v4l2.c:934 GENERIC(ERR) :
+[ 1549.014750] Juno isp fw_module_exit
+[ 1549.020573] 
+[ 1549.022193] connection_thread@main_firmware.c:112 GENERIC(CRIT) :
+[ 1549.022197] connection_thread stop
+[ 1549.028084] 
+[ 1549.124158] isp_fw_process@main_firmware.c:138 GENERIC(CRIT) :
+[ 1549.124170] isp_fw_process stop
+[ 1549.125826] 
+[ 1549.130756] lens_v4l2_subdev_deinit@v4l2_vcm.c:244 GENERIC(CRIT) :
+[ 1549.130762] Lens context pointer is NULL
+[ 1549.136591] 
+[ 1549.143866] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:202 GENERIC(ERR) :
+[ 1549.143875] unbind called for subdevice sd 0x32420f8, asc 0x7f406c80, sd->dev 0x365f020, name imx415 0-001a
+[ 1549.149499] 
+[ 1549.160678] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:157 GENERIC(ERR) :
+[ 1549.160681] Requested a index pointer with a name imx415 0-001a
+[ 1549.169082] 
+[ 1549.176447] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:163 GENERIC(ERR) :
+[ 1549.176450] Return index pointer 0x0
+[ 1549.184858] 
+[ 1549.189874] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:208 GENERIC(ERR) :
+[ 1549.189877] stopping V4L2 firmware
+[ 1549.197422] 
+[ 1549.207494] AM_SC: Error g_sc is NULL
+[ 1549.208416] isp_platform_remove@main_kernel_juno_v4l2.c:902 GENERIC(ERR) :
+[ 1549.208419] Isp remove
+[ 1549.215595] 
+[ 1549.417642] fw_module_init@main_kernel_juno_v4l2.c:925 GENERIC(ERR) :
+[ 1549.417654] Juno isp fw_module_init
+[ 1549.423569] 
+[ 1549.425170] isp_module_check@main_kernel_juno_v4l2.c:592 GENERIC(ERR) :
+[ 1549.425174] isp efuse value: ff630038 4000
+[ 1549.435702] 
+[ 1549.437187] isp_platform_probe@main_kernel_juno_v4l2.c:631 GENERIC(ERR) :
+[ 1549.437189] pdev ff140000.isp has 1 resources
+[ 1549.448276] 
+[ 1549.449744] isp_platform_probe@main_kernel_juno_v4l2.c:635 GENERIC(ERR) :
+[ 1549.449746]   res[0] type=MEM start=0xff140000 end=0xff17ffff name=ISP
+[ 1549.463011] 
+[ 1549.464508] isp_platform_probe@main_kernel_juno_v4l2.c:662 GENERIC(ERR) :
+[ 1549.464511] Juno isp irq = 45 !
+[ 1549.474363] 
+[ 1549.475830] isp_platform_probe@main_kernel_juno_v4l2.c:673 GENERIC(ERR) :
+[ 1549.475833] Juno isp address = 0xff140000, end = 0xff17ffff !
+[ 1549.488326] 
+[ 1549.494822] isp_platform_probe@main_kernel_juno_v4l2.c:692 GENERIC(ERR) :
+[ 1549.494825] Success to get link device: isp-sc
+[ 1549.502115] 
+[ 1549.503581] AM_SC: am_sc_parse_dt: Error match compatible
+[ 1549.508965] isp_platform_probe@main_kernel_juno_v4l2.c:715 GENERIC(ERR) :
+[ 1549.508968] Success to get phy-csi node: phy-csi
+[ 1549.520314] 
+[ 1549.521792] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: name: csi2_phy0
+[ 1549.528215] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: name: csi2_phy1
+[ 1549.534627] AM_MIPI: am_mipi_parse_dt: rs idx 2 info: name: aphy_reg
+[ 1549.540949] AM_MIPI: am_mipi_parse_dt: rs idx 3 info: name: csi0_host
+[ 1549.547373] AM_MIPI: am_mipi_parse_dt: rs idx 4 info: name: csi1_host
+[ 1549.553781] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: irq 46
+[ 1549.559411] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: irq 47
+[ 1549.565036] AM_MIPI: am_mipi_parse_dt:Success to get link device: isp-adapter
+[ 1549.572154] AM_ADAP: am_adap_parse_dt: rs idx info: name: adapter
+[ 1549.578223] AM_ADAP: am_adap_parse_dt:rs info: irq: 48
+[ 1549.583330] AM_ADAP: no reserved mem for adapter (-19); DDR/DOL modes unavailable
+[ 1549.590774] AM_ADAP: adapter alloc 48M memory
+[ 1549.595126] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/adapt_frame'
+[ 1549.604556] CPU: 4 UID: 0 PID: 4327 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1549.604564] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1549.604567] Hardware name: Khadas VIM3 (DT)
+[ 1549.604569] Call trace:
+[ 1549.604571]  show_stack+0x34/0x98 (C)
+[ 1549.604585]  dump_stack_lvl+0x60/0x80
+[ 1549.604593]  dump_stack+0x18/0x24
+[ 1549.604599]  sysfs_warn_dup+0x6c/0x90
+[ 1549.604607]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1549.604613]  sysfs_create_file_ns+0x78/0xd0
+[ 1549.604618]  device_create_file+0x60/0xb8
+[ 1549.604625]  am_adap_parse_dt+0x2c8/0x300 [iv009_isp]
+[ 1549.604710]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1549.604785]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1549.604859]  platform_probe+0x64/0xb8
+[ 1549.604865]  really_probe+0xc8/0x3a0
+[ 1549.604869]  __driver_probe_device+0x8c/0x1a0
+[ 1549.604874]  driver_probe_device+0x44/0x130
+[ 1549.604878]  __driver_attach+0xcc/0x208
+[ 1549.604882]  bus_for_each_dev+0x84/0x100
+[ 1549.604886]  driver_attach+0x2c/0x40
+[ 1549.604890]  bus_add_driver+0x118/0x250
+[ 1549.604894]  driver_register+0x70/0x138
+[ 1549.604899]  __platform_driver_register+0x2c/0x40
+[ 1549.604903]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1549.604978]  do_one_initcall+0x60/0x2f8
+[ 1549.604985]  do_init_module+0x5c/0x270
+[ 1549.604991]  load_module+0x1ba0/0x2200
+[ 1549.604997]  init_module_from_file+0x90/0xe0
+[ 1549.605002]  __arm64_sys_finit_module+0x26c/0x368
+[ 1549.605007]  invoke_syscall+0x4c/0x100
+[ 1549.605013]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1549.605019]  do_el0_svc+0x24/0x38
+[ 1549.605024]  el0_svc+0x38/0x120
+[ 1549.605029]  el0t_64_sync_handler+0xa0/0xe8
+[ 1549.605033]  el0t_64_sync+0x198/0x1a0
+[ 1549.605044] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/inject_frame'
+[ 1549.764488] CPU: 2 UID: 0 PID: 4327 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1549.764496] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1549.764499] Hardware name: Khadas VIM3 (DT)
+[ 1549.764500] Call trace:
+[ 1549.764502]  show_stack+0x34/0x98 (C)
+[ 1549.764511]  dump_stack_lvl+0x60/0x80
+[ 1549.764517]  dump_stack+0x18/0x24
+[ 1549.764523]  sysfs_warn_dup+0x6c/0x90
+[ 1549.764529]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1549.764535]  sysfs_create_file_ns+0x78/0xd0
+[ 1549.764540]  device_create_file+0x60/0xb8
+[ 1549.764546]  am_adap_parse_dt+0x2d8/0x300 [iv009_isp]
+[ 1549.764624]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1549.764700]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1549.764773]  platform_probe+0x64/0xb8
+[ 1549.764779]  really_probe+0xc8/0x3a0
+[ 1549.764783]  __driver_probe_device+0x8c/0x1a0
+[ 1549.764788]  driver_probe_device+0x44/0x130
+[ 1549.764792]  __driver_attach+0xcc/0x208
+[ 1549.764796]  bus_for_each_dev+0x84/0x100
+[ 1549.764800]  driver_attach+0x2c/0x40
+[ 1549.764803]  bus_add_driver+0x118/0x250
+[ 1549.764807]  driver_register+0x70/0x138
+[ 1549.764812]  __platform_driver_register+0x2c/0x40
+[ 1549.764817]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1549.764891]  do_one_initcall+0x60/0x2f8
+[ 1549.764897]  do_init_module+0x5c/0x270
+[ 1549.764902]  load_module+0x1ba0/0x2200
+[ 1549.764907]  init_module_from_file+0x90/0xe0
+[ 1549.764913]  __arm64_sys_finit_module+0x26c/0x368
+[ 1549.764918]  invoke_syscall+0x4c/0x100
+[ 1549.764924]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1549.764930]  do_el0_svc+0x24/0x38
+[ 1549.764935]  el0_svc+0x38/0x120
+[ 1549.764939]  el0t_64_sync_handler+0xa0/0xe8
+[ 1549.764943]  el0t_64_sync+0x198/0x1a0
+[ 1549.764957] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/dol_frame'
+[ 1549.924122] CPU: 3 UID: 0 PID: 4327 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1549.924130] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1549.924132] Hardware name: Khadas VIM3 (DT)
+[ 1549.924134] Call trace:
+[ 1549.924135]  show_stack+0x34/0x98 (C)
+[ 1549.924143]  dump_stack_lvl+0x60/0x80
+[ 1549.924150]  dump_stack+0x18/0x24
+[ 1549.924155]  sysfs_warn_dup+0x6c/0x90
+[ 1549.924162]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1549.924167]  sysfs_create_file_ns+0x78/0xd0
+[ 1549.924172]  device_create_file+0x60/0xb8
+[ 1549.924178]  am_adap_parse_dt+0x2e8/0x300 [iv009_isp]
+[ 1549.924257]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1549.924332]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1549.924406]  platform_probe+0x64/0xb8
+[ 1549.924412]  really_probe+0xc8/0x3a0
+[ 1549.924416]  __driver_probe_device+0x8c/0x1a0
+[ 1549.924421]  driver_probe_device+0x44/0x130
+[ 1549.924425]  __driver_attach+0xcc/0x208
+[ 1549.924429]  bus_for_each_dev+0x84/0x100
+[ 1549.924433]  driver_attach+0x2c/0x40
+[ 1549.924437]  bus_add_driver+0x118/0x250
+[ 1549.924441]  driver_register+0x70/0x138
+[ 1549.924446]  __platform_driver_register+0x2c/0x40
+[ 1549.924451]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1549.924526]  do_one_initcall+0x60/0x2f8
+[ 1549.924532]  do_init_module+0x5c/0x270
+[ 1549.924538]  load_module+0x1ba0/0x2200
+[ 1549.924544]  init_module_from_file+0x90/0xe0
+[ 1549.924549]  __arm64_sys_finit_module+0x26c/0x368
+[ 1549.924555]  invoke_syscall+0x4c/0x100
+[ 1549.924561]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1549.924566]  do_el0_svc+0x24/0x38
+[ 1549.924572]  el0_svc+0x38/0x120
+[ 1549.924575]  el0t_64_sync_handler+0xa0/0xe8
+[ 1549.924579]  el0t_64_sync+0x198/0x1a0
+[ 1549.924643] isp_platform_probe@main_kernel_juno_v4l2.c:731 GENERIC(ERR) :
+[ 1550.074460] isp init clock is 666 MHZ
+[ 1550.084862] 
+[ 1550.086384] isp_platform_probe@main_kernel_juno_v4l2.c:744 GENERIC(ERR) :
+[ 1550.086387] mipi init clock is 199 MHZ
+[ 1550.096820] 
+[ 1550.103343] interrupt comes in (irq = 45) without app handler, status: 0x200, pusle mode:0
+[ 1550.108324] isp_platform_probe@main_kernel_juno_v4l2.c:757 GENERIC(ERR) :
+[ 1550.108878] register v4l2 driver. result 0.
+[ 1550.115656] 
+[ 1550.121272] isp_platform_probe@main_kernel_juno_v4l2.c:767 GENERIC(ERR) :
+[ 1550.121274] --------------------------------
+[ 1550.128054] 
+[ 1550.133783] isp_platform_probe@main_kernel_juno_v4l2.c:768 GENERIC(ERR) :
+[ 1550.133787] Register 3 subdevices
+[ 1550.140575] 
+[ 1550.145279] isp_platform_probe@main_kernel_juno_v4l2.c:769 GENERIC(ERR) :
+[ 1550.145282] --------------------------------
+[ 1550.152049] 
+[ 1550.157776] acamera_camera_async_bound@main_kernel_juno_v4l2.c:172 GENERIC(ERR) :
+[ 1550.157778] bound called with sd 0x32420f8, asc 0x755c580, sd->dev 0x365f020, name imx415 0-001a
+[ 1550.165230] 
+[ 1550.175440] acamera_camera_async_complete@main_kernel_juno_v4l2.c:226 GENERIC(ERR) :
+[ 1550.175443] complete called
+[ 1550.183158] 
+[ 1550.187398] acamera_camera_async_complete@main_kernel_juno_v4l2.c:228 GENERIC(ERR) :
+[ 1550.187401] starting V4L2 firmware
+[ 1550.195118] 
+[ 1550.200309] isp_v4l2_ctrl_s_ctrl_standard@isp-v4l2-ctrl.c:42 GENERIC(ERR) :
+[ 1550.200313] Control - id:0x980900, val:128, is_int:1, min:0, max:255.
+[ 1550.213324] 
+[ 1550.214789] isp_fw_do_set_brightness@fw-interface.c:1112 GENERIC(ERR) :
+[ 1550.214792] ISP FW not inited yet
+[ 1550.221378] 
+[ 1550.245259] acamera_init@acamera.c:336 GENERIC(ERR) :
+[ 1550.245268] Success get product id: 0x00000a62
+[ 1550.249975] 
+[ 1550.252840] general_set_wdr_mode@general_func.c:453 GENERAL(CRIT) :
+[ 1550.252846] Setting Linear Binary Sequence
+[ 1550.261755] 
+[ 1550.263228] acamera_camera_v4l2_get_subdev_by_prefix@main_kernel_juno_v4l2.c:144 GENERIC(ERR) :
+[ 1550.263231] Matched subdev 'imx415 0-001a' for prefix 'imx415'
+[ 1550.271894] 
+[ 1550.279177] sensor_print_params@V4L2_drv.c:227 GENERIC(CRIT) :
+[ 1550.279180] IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000, exp 4..2242, again_log2_max 1306235
+[ 1550.284980] 
+[ 1550.295982] AM_MIPI: am_mipi_phy_init:Settle:0x00000018
+[ 1550.301191] AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+[ 1550.306824] AM_MIPI: am_mipi_init:Success mipi init
+[ 1550.311678] AM_ADAP: inject_data_flag = 0, dump_data_flag = 0
+[ 1550.317441] AM_ADAP: reader : width = 3864, val = 302
+[ 1550.322435] AM_ADAP: frontend : width = 3864, val = 302
+[ 1550.327645] sensor_set_iface@V4L2_drv.c:278 GENERIC(CRIT) :
+[ 1550.327648] MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+[ 1550.333185] 
+[ 1550.341055] get_calibrations_v4l2@acamera_get_calibrations_v4l2.c:136 GENERIC(CRIT) :
+[ 1550.341058] Loaded imx415 calibrations, ctx_id:0 wdr_mode:0 ret:0
+[ 1550.348869] 
+[ 1550.357442] sensor_configure_buffers@sensor_func.c:248 SENSOR(ERR) :
+[ 1550.357446] No output buffers for temper block provided in settings. Temper is disabled (msb dma off: 0)
+[ 1550.362733] 
+[ 1550.373950] sbuf_mgr_alloc_sbuf@sbuf_func.c:174 SBUF(CRIT) :
+[ 1550.373954] sbuf: len_needed: 234096, len_alloc: 241663, len_used: 237568, page_size: 4096, buf_alloc: 000000006924ed2e, buf_used: 000000006924ed2e.
+[ 1550.379287] 
+[ 1550.394006] sbuf_calibration_init@sbuf_func.c:452 SBUF(ERR) :
+[ 1550.394009] sbuf_calibration_init.
+[ 1550.399733] 
+[ 1550.404584] get_cur_calibration_total_size@sbuf_func.c:310 SBUF(ERR) :
+[ 1550.404586] fw_instance: 00000000848d7fd0, CALIBRATION_TOTAL_SIZE: 123.
+[ 1550.411089] 
+[ 1550.419137] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.419140] Error: LUT 39 is NULL(0000000000000000), not inited.
+[ 1550.425644] 
+[ 1550.433090] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.433092] Error: LUT 40 is NULL(0000000000000000), not inited.
+[ 1550.439599] 
+[ 1550.447043] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.447045] Error: LUT 43 is NULL(0000000000000000), not inited.
+[ 1550.453547] 
+[ 1550.460996] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.460999] Error: LUT 44 is NULL(0000000000000000), not inited.
+[ 1550.467505] 
+[ 1550.474949] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.474952] Error: LUT 45 is NULL(0000000000000000), not inited.
+[ 1550.481454] 
+[ 1550.488905] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.488907] Error: LUT 74 is NULL(0000000000000000), not inited.
+[ 1550.495416] 
+[ 1550.502856] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.502859] Error: LUT 75 is NULL(0000000000000000), not inited.
+[ 1550.509364] 
+[ 1550.516810] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.516812] Error: LUT 104 is NULL(0000000000000000), not inited.
+[ 1550.523322] 
+[ 1550.530850] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.530852] Error: LUT 105 is NULL(0000000000000000), not inited.
+[ 1550.537359] 
+[ 1550.544890] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.544892] Error: LUT 107 is NULL(0000000000000000), not inited.
+[ 1550.551402] 
+[ 1550.558930] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.558932] Error: LUT 120 is NULL(0000000000000000), not inited.
+[ 1550.565437] 
+[ 1550.572970] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.572972] Error: LUT 121 is NULL(0000000000000000), not inited.
+[ 1550.579479] 
+[ 1550.587010] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1550.587012] Error: LUT 122 is NULL(0000000000000000), not inited.
+[ 1550.593515] 
+[ 1550.601051] get_cur_calibration_total_size@sbuf_func.c:325 SBUF(ERR) :
+[ 1550.601053] Total size for all IQ LUTs is 24390 bytes
+[ 1550.607563] 
+[ 1550.614050] sbuf_mgr_item_count_in_using@sbuf_func.c:427 SBUF(ERR) :
+[ 1550.614052] sbuf item using total count: 0.
+[ 1550.620387] 
+[ 1550.626010] update_cur_calibration_to_sbuf@sbuf_func.c:362 SBUF(ERR) :
+[ 1550.626012] sbuf_cali_base: 000000001396b5c8, p_sbuf_lut_arr: 000000001396b5c8, p_sbuf_cali_data: 0000000088ca5725
+[ 1550.632518] 
+[ 1550.644350] sbuf_calibration_init@sbuf_func.c:493 SBUF(CRIT) :
+[ 1550.644354] sbuf_calibration wdr_mode updated: 65535 -> 0.
+[ 1550.650119] 
+[ 1550.657042] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1550.657045] DMA_WRITER: Failed to initialize a dma writer type:0 output. 0x0 
+[ 1550.662853] 
+[ 1550.671425] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1550.671427] DMA_WRITER: Failed to initialize a dma writer type:1 output. 0x0 
+[ 1550.677235] 
+[ 1550.685813] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:114 GENERIC(ERR) :
+[ 1550.685815] Requested a pointer to the subdev with a name SocLens
+[ 1550.694315] 
+[ 1550.701868] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:121 GENERIC(ERR) :
+[ 1550.701872] Return subdev pointer 0x0
+[ 1550.710354] 
+[ 1550.715451] lens_init@lens_init.c:144 GENERIC(ERR) :
+[ 1550.715453] NO VALID SENSOR DRIVER FOUND bus:0x0
+[ 1550.720395] 
+[ 1550.727814] acamera_init_context_seq@acamera_fw.c:603 GENERIC(ERR) :
+[ 1550.727817] load isp context sequence[9]
+[ 1550.736712] 
+[ 1550.738162] AM_SC: 1231, g_sc is NULL.
+[ 1550.744057] connection_thread@main_firmware.c:102 GENERIC(CRIT) :
+[ 1550.744061] connection_thread start
+[ 1550.744202] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1550.744479] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1550.744483] isp_v4l2_create_instance@isp-v4l2.c:987 GENERIC(CRIT) :
+[ 1550.744485] V4L2 capture device registered as video1.
+[ 1550.744487] 
+[ 1550.744499] isp_platform_probe@main_kernel_juno_v4l2.c:838 GENERIC(ERR) :
+[ 1550.744501] Init finished. async register notifier result 0. Waiting for subdevices
+[ 1550.744503] 
+[ 1550.745898] 
+[ 1550.747661] isp_fw_process start
+[ 1550.756832] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1550.757315] 
+[ 1550.758129] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1550.821562] 
+[ 1550.823146] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1550.823149] Stream off 4
+[ 1550.831669] 
+[ 1566.186065] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1566.186078] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1566.197772] 
+[ 1566.199303] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1341 GENERIC(ERR) :
+[ 1566.199307] [Stream#1] pixel format for meta port must be 0x4154454d, not 0x00000000. Correct it!!
+[ 1566.206274] 
+[ 1566.216661] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1566.216664] [Stream#2] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1566.232246] 
+[ 1566.233723] isp_v4l2_s_fmt_vid_cap@isp-v4l2.c:395 GENERIC(CRIT) :
+[ 1566.233726] isp_v4l2_s_fmt_vid_cap sid:2
+[ 1566.239825] 
+[ 1566.245147] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1454 GENERIC(CRIT) :
+[ 1566.245149] [Stream#2]   - SET fmt - width: 1920, height: 1080, format: 0x3231564e.
+[ 1566.252270] 
+[ 1566.261377] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1533 GENERIC(CRIT) :
+[ 1566.261380] [Stream#2]   - New fmt - width: 1920, height: 1080, format: 0x3231564e, type:     9. 
+[ 1566.268476] 
+[ 1566.278872] isp_v4l2_s_fmt_vid_cap@isp-v4l2.c:395 GENERIC(CRIT) :
+[ 1566.278876] isp_v4l2_s_fmt_vid_cap sid:0
+[ 1566.284851] 
+[ 1566.290213] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1454 GENERIC(CRIT) :
+[ 1566.290215] [Stream#0]   - SET fmt - width: 3864, height: 2192, format: 0x3231564e.
+[ 1566.297325] 
+[ 1566.306424] fw_intf_stream_set_resolution@fw-interface.c:626 GENERIC(CRIT) :
+[ 1566.306427] Setting new resolution : width = 3864, height = 2192 (preset idx = 0, fps = 60)
+[ 1566.313445] 
+[ 1566.323240] sensor_print_params@V4L2_drv.c:227 GENERIC(CRIT) :
+[ 1566.323243] IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000, exp 4..2242, again_log2_max 1306235
+[ 1566.329050] 
+[ 1566.340056] AM_MIPI: am_mipi_phy_init:Settle:0x00000018
+[ 1566.345263] AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+[ 1566.350890] AM_MIPI: am_mipi_init:Success mipi init
+[ 1566.355738] AM_ADAP: inject_data_flag = 0, dump_data_flag = 0
+[ 1566.361469] AM_ADAP: reader : width = 3864, val = 302
+[ 1566.366491] AM_ADAP: frontend : width = 3864, val = 302
+[ 1566.371693] sensor_set_iface@V4L2_drv.c:278 GENERIC(CRIT) :
+[ 1566.371695] MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+[ 1566.377235] 
+[ 1566.385118] get_calibrations_v4l2@acamera_get_calibrations_v4l2.c:136 GENERIC(CRIT) :
+[ 1566.385121] Loaded imx415 calibrations, ctx_id:0 wdr_mode:0 ret:0
+[ 1566.392927] 
+[ 1566.401831] sbuf_update_calibration_data@sbuf_func.c:506 SBUF(ERR) :
+[ 1566.401834] +++ sbuf_update_calibration_data
+[ 1566.406790] 
+[ 1566.412500] sbuf_calibration_init@sbuf_func.c:452 SBUF(ERR) :
+[ 1566.412502] sbuf_calibration_init.
+[ 1566.418229] 
+[ 1566.423073] sbuf_update_calibration_data@sbuf_func.c:516 SBUF(ERR) :
+[ 1566.423075] --- sbuf_update_calibration_data
+[ 1566.429404] 
+[ 1566.435122] sensor_configure_buffers@sensor_func.c:248 SENSOR(ERR) :
+[ 1566.435125] No output buffers for temper block provided in settings. Temper is disabled (msb dma off: 0)
+[ 1566.441456] 
+[ 1566.453425] AM_SC: 1204, g_sc is NULL.
+[ 1566.456137] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1533 GENERIC(CRIT) :
+[ 1566.456141] [Stream#0]   - New fmt - width: 3864, height: 2192, format: 0x3231564e, type:     9. 
+[ 1566.463221] 
+[ 1566.639176] isp_v4l2_streamon@isp-v4l2.c:468 GENERIC(CRIT) :
+[ 1566.639187] TRACE streamon: about to call vb2_streamon
+[ 1566.640144] 
+[ 1566.646723] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1566.646727] TRACE wfq: type=0 len=1 enabled=0 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1566.653743] 
+[ 1566.663270] dma_writer_write_frame_queue@dma_writer.c:306 DMA_WRITER(CRIT) :
+[ 1566.663273] TRACE dma arm: pipe=0 3864x2192 stride=3968 need=8697856 have=8699904 | uv fmt=77 stride=3968 need=4348928 have=4349952
+[ 1566.670294] 
+[ 1566.683551] dma_writer_write_frame_queue@dma_writer.c:357 DMA_WRITER(CRIT) :
+[ 1566.683554] TRACE dma armed readback: pipe=0 fmt=13 3864x2192 | uv fmt=77 3864x2192
+[ 1566.690574] 
+[ 1566.699678] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1566.699680] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1566.706698] 
+[ 1566.716224] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1566.716227] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1566.723256] 
+[ 1566.732806] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1566.732810] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1566.739812] 
+[ 1566.749331] isp_v4l2_streamon@isp-v4l2.c:470 GENERIC(CRIT) :
+[ 1566.749334] TRACE streamon: vb2_streamon returned rc = 0
+[ 1566.754974] 
+[ 1566.761723] isp_v4l2_streamon@isp-v4l2.c:477 GENERIC(CRIT) :
+[ 1566.761725] TRACE streamon: about to call isp_v4l2_stream_on
+[ 1566.767420] 
+[ 1566.774488] isp_v4l2_stream_on@isp-v4l2-stream.c:1171 GENERIC(CRIT) :
+[ 1566.774492] TRACE stream_on: [Stream#0] about to kthread_run copy thread
+[ 1566.780883] 
+[ 1566.789215] isp_v4l2_stream_on@isp-v4l2-stream.c:1177 GENERIC(CRIT) :
+[ 1566.789218] TRACE stream_on: [Stream#0] stream_thread pid: 4540
+[ 1566.795450] 
+[ 1566.802803] isp_v4l2_stream_on@isp-v4l2-stream.c:1187 GENERIC(CRIT) :
+[ 1566.802805] TRACE stream_on: [Stream#0] about to call fw_intf_stream_start
+[ 1566.809222] 
+[ 1566.817539] fw_intf_stream_start@fw-interface.c:400 GENERIC(CRIT) :
+[ 1566.817542] TRACE fw_intf_stream_start: about to acamera_command(SENSOR_STREAMING, ON)
+[ 1566.823789] 
+[ 1566.834171] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1566.834174] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1566.839664] 
+[ 1566.851866] start_streaming@V4L2_drv.c:616 GENERIC(CRIT) :
+[ 1566.851869] start_streaming: entering, about to call sensor s_stream(1)
+[ 1566.856292] 
+[ 1567.000007] start_streaming@V4L2_drv.c:618 GENERIC(CRIT) :
+[ 1567.000014] start_streaming: sensor s_stream(1) returned rc = 0
+[ 1567.000931] 
+[ 1567.008134] start_streaming@V4L2_drv.c:625 GENERIC(CRIT) :
+[ 1567.008137] imx415 streaming on
+[ 1567.013641] 
+[ 1567.018175] fw_intf_stream_start@fw-interface.c:402 GENERIC(CRIT) :
+[ 1567.018178] TRACE fw_intf_stream_start: acamera_command(SENSOR_STREAMING, ON) returned, rc = 0
+[ 1567.021147] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.022020] 
+[ 1567.025736] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.027364] isp_v4l2_stream_on@isp-v4l2-stream.c:1190 GENERIC(CRIT) :
+[ 1567.028204] 
+[ 1567.029900] TRACE stream_on: [Stream#0] fw_intf_stream_start returned
+[ 1567.037630] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.041590] 
+[ 1567.041593] isp_v4l2_streamon@isp-v4l2.c:479 GENERIC(CRIT) :
+[ 1567.041595] TRACE streamon: isp_v4l2_stream_on returned rc = 0
+[ 1567.043244] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.044951] 
+[ 1567.045797] 
+[ 1567.106831] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1567.106834] cmos_mon_fe: cur: 6, pre: 2.
+[ 1567.112806] 
+[ 1567.119782] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.119786] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.124684] 
+[ 1567.136248] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1567.136251] cmos_mon_fe: cur: 8, pre: 6.
+[ 1567.141849] 
+[ 1567.147209] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.147211] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.153712] 
+[ 1567.167732] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1567.167736] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1567.173189] 
+[ 1567.188141] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1567.188144] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1567.191529] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.192177] 
+[ 1567.194045] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.214267] 
+[ 1567.225447] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1567.225450] cmos_mon_fe: cur: 13, pre: 11.
+[ 1567.231423] 
+[ 1567.236961] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.236964] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.243467] 
+[ 1567.254661] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1567.254664] cmos_mon_fe: cur: 15, pre: 13.
+[ 1567.260623] 
+[ 1567.271779] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1567.271783] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1567.274996] 
+[ 1567.285961] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.285965] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.291029] 
+[ 1567.305691] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1567.305695] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1567.309244] 
+[ 1567.319524] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1567.319527] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1567.325268] 
+[ 1567.334383] AM_MIPI: am_mipi_deinit:Success mipi deinit
+[ 1567.341730] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1567.341734] Stream off 0
+[ 1567.350309] 
+[ 1567.351862] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1567.351865] Stream off 2
+[ 1567.360458] 
+[ 1567.361940] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1567.361942] Stream off 4
+[ 1567.370589] 
+[ 1567.372087] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1567.372089] Stream off 0
+[ 1567.380739] 
+[ 1622.277447] DS1_CROP_FIX_SAFE_20260915
+[ 1622.281039] fw_module_exit@main_kernel_juno_v4l2.c:934 GENERIC(ERR) :
+[ 1622.281052] Juno isp fw_module_exit
+[ 1622.286932] 
+[ 1622.288620] connection_thread@main_firmware.c:112 GENERIC(CRIT) :
+[ 1622.288624] connection_thread stop
+[ 1622.294495] 
+[ 1622.397764] isp_fw_process@main_firmware.c:138 GENERIC(CRIT) :
+[ 1622.397773] isp_fw_process stop
+[ 1622.399433] 
+[ 1622.404371] lens_v4l2_subdev_deinit@v4l2_vcm.c:244 GENERIC(CRIT) :
+[ 1622.404375] Lens context pointer is NULL
+[ 1622.410196] 
+[ 1622.417352] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:202 GENERIC(ERR) :
+[ 1622.417361] unbind called for subdevice sd 0x32420f8, asc 0x755c580, sd->dev 0x365f020, name imx415 0-001a
+[ 1622.423107] 
+[ 1622.434198] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:157 GENERIC(ERR) :
+[ 1622.434201] Requested a index pointer with a name imx415 0-001a
+[ 1622.442605] 
+[ 1622.449968] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:163 GENERIC(ERR) :
+[ 1622.449971] Return index pointer 0x0
+[ 1622.458379] 
+[ 1622.463395] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:208 GENERIC(ERR) :
+[ 1622.463397] stopping V4L2 firmware
+[ 1622.470943] 
+[ 1622.481049] AM_SC: Error g_sc is NULL
+[ 1622.481976] isp_platform_remove@main_kernel_juno_v4l2.c:902 GENERIC(ERR) :
+[ 1622.481978] Isp remove
+[ 1622.489150] 
+[ 1622.684919] fw_module_init@main_kernel_juno_v4l2.c:925 GENERIC(ERR) :
+[ 1622.684932] Juno isp fw_module_init
+[ 1622.690968] 
+[ 1622.692485] isp_module_check@main_kernel_juno_v4l2.c:592 GENERIC(ERR) :
+[ 1622.692488] isp efuse value: ff630038 4000
+[ 1622.703018] 
+[ 1622.704495] isp_platform_probe@main_kernel_juno_v4l2.c:631 GENERIC(ERR) :
+[ 1622.704497] pdev ff140000.isp has 1 resources
+[ 1622.715587] 
+[ 1622.717050] isp_platform_probe@main_kernel_juno_v4l2.c:635 GENERIC(ERR) :
+[ 1622.717053]   res[0] type=MEM start=0xff140000 end=0xff17ffff name=ISP
+[ 1622.730323] 
+[ 1622.731804] isp_platform_probe@main_kernel_juno_v4l2.c:662 GENERIC(ERR) :
+[ 1622.731807] Juno isp irq = 45 !
+[ 1622.741662] 
+[ 1622.743137] isp_platform_probe@main_kernel_juno_v4l2.c:673 GENERIC(ERR) :
+[ 1622.743140] Juno isp address = 0xff140000, end = 0xff17ffff !
+[ 1622.755626] 
+[ 1622.762133] isp_platform_probe@main_kernel_juno_v4l2.c:692 GENERIC(ERR) :
+[ 1622.762137] Success to get link device: isp-sc
+[ 1622.769370] 
+[ 1622.770869] AM_SC: am_sc_parse_dt: Error match compatible
+[ 1622.776245] isp_platform_probe@main_kernel_juno_v4l2.c:715 GENERIC(ERR) :
+[ 1622.776248] Success to get phy-csi node: phy-csi
+[ 1622.787578] 
+[ 1622.789055] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: name: csi2_phy0
+[ 1622.795529] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: name: csi2_phy1
+[ 1622.801896] AM_MIPI: am_mipi_parse_dt: rs idx 2 info: name: aphy_reg
+[ 1622.808217] AM_MIPI: am_mipi_parse_dt: rs idx 3 info: name: csi0_host
+[ 1622.814624] AM_MIPI: am_mipi_parse_dt: rs idx 4 info: name: csi1_host
+[ 1622.821047] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: irq 46
+[ 1622.826675] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: irq 47
+[ 1622.832324] AM_MIPI: am_mipi_parse_dt:Success to get link device: isp-adapter
+[ 1622.839416] AM_ADAP: am_adap_parse_dt: rs idx info: name: adapter
+[ 1622.845492] AM_ADAP: am_adap_parse_dt:rs info: irq: 48
+[ 1622.850588] AM_ADAP: no reserved mem for adapter (-19); DDR/DOL modes unavailable
+[ 1622.858090] AM_ADAP: adapter alloc 48M memory
+[ 1622.862391] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/adapt_frame'
+[ 1622.871828] CPU: 2 UID: 0 PID: 4921 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1622.871837] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1622.871839] Hardware name: Khadas VIM3 (DT)
+[ 1622.871841] Call trace:
+[ 1622.871844]  show_stack+0x34/0x98 (C)
+[ 1622.871858]  dump_stack_lvl+0x60/0x80
+[ 1622.871866]  dump_stack+0x18/0x24
+[ 1622.871872]  sysfs_warn_dup+0x6c/0x90
+[ 1622.871880]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1622.871886]  sysfs_create_file_ns+0x78/0xd0
+[ 1622.871891]  device_create_file+0x60/0xb8
+[ 1622.871898]  am_adap_parse_dt+0x2c8/0x300 [iv009_isp]
+[ 1622.871984]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1622.872059]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1622.872133]  platform_probe+0x64/0xb8
+[ 1622.872140]  really_probe+0xc8/0x3a0
+[ 1622.872144]  __driver_probe_device+0x8c/0x1a0
+[ 1622.872149]  driver_probe_device+0x44/0x130
+[ 1622.872153]  __driver_attach+0xcc/0x208
+[ 1622.872157]  bus_for_each_dev+0x84/0x100
+[ 1622.872161]  driver_attach+0x2c/0x40
+[ 1622.872165]  bus_add_driver+0x118/0x250
+[ 1622.872169]  driver_register+0x70/0x138
+[ 1622.872173]  __platform_driver_register+0x2c/0x40
+[ 1622.872178]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1622.872252]  do_one_initcall+0x60/0x2f8
+[ 1622.872258]  do_init_module+0x5c/0x270
+[ 1622.872265]  load_module+0x1ba0/0x2200
+[ 1622.872270]  init_module_from_file+0x90/0xe0
+[ 1622.872276]  __arm64_sys_finit_module+0x26c/0x368
+[ 1622.872281]  invoke_syscall+0x4c/0x100
+[ 1622.872288]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1622.872293]  do_el0_svc+0x24/0x38
+[ 1622.872299]  el0_svc+0x38/0x120
+[ 1622.872304]  el0t_64_sync_handler+0xa0/0xe8
+[ 1622.872308]  el0t_64_sync+0x198/0x1a0
+[ 1622.872320] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/inject_frame'
+[ 1623.031769] CPU: 3 UID: 0 PID: 4921 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1623.031778] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1623.031780] Hardware name: Khadas VIM3 (DT)
+[ 1623.031782] Call trace:
+[ 1623.031783]  show_stack+0x34/0x98 (C)
+[ 1623.031793]  dump_stack_lvl+0x60/0x80
+[ 1623.031799]  dump_stack+0x18/0x24
+[ 1623.031805]  sysfs_warn_dup+0x6c/0x90
+[ 1623.031812]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1623.031817]  sysfs_create_file_ns+0x78/0xd0
+[ 1623.031823]  device_create_file+0x60/0xb8
+[ 1623.031829]  am_adap_parse_dt+0x2d8/0x300 [iv009_isp]
+[ 1623.031907]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1623.031982]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1623.032056]  platform_probe+0x64/0xb8
+[ 1623.032061]  really_probe+0xc8/0x3a0
+[ 1623.032066]  __driver_probe_device+0x8c/0x1a0
+[ 1623.032070]  driver_probe_device+0x44/0x130
+[ 1623.032074]  __driver_attach+0xcc/0x208
+[ 1623.032079]  bus_for_each_dev+0x84/0x100
+[ 1623.032083]  driver_attach+0x2c/0x40
+[ 1623.032086]  bus_add_driver+0x118/0x250
+[ 1623.032090]  driver_register+0x70/0x138
+[ 1623.032095]  __platform_driver_register+0x2c/0x40
+[ 1623.032100]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1623.032173]  do_one_initcall+0x60/0x2f8
+[ 1623.032180]  do_init_module+0x5c/0x270
+[ 1623.032186]  load_module+0x1ba0/0x2200
+[ 1623.032191]  init_module_from_file+0x90/0xe0
+[ 1623.032196]  __arm64_sys_finit_module+0x26c/0x368
+[ 1623.032202]  invoke_syscall+0x4c/0x100
+[ 1623.032208]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1623.032213]  do_el0_svc+0x24/0x38
+[ 1623.032218]  el0_svc+0x38/0x120
+[ 1623.032222]  el0t_64_sync_handler+0xa0/0xe8
+[ 1623.032226]  el0t_64_sync+0x198/0x1a0
+[ 1623.032242] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/dol_frame'
+[ 1623.191358] CPU: 3 UID: 0 PID: 4921 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1623.191365] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1623.191366] Hardware name: Khadas VIM3 (DT)
+[ 1623.191368] Call trace:
+[ 1623.191369]  show_stack+0x34/0x98 (C)
+[ 1623.191377]  dump_stack_lvl+0x60/0x80
+[ 1623.191383]  dump_stack+0x18/0x24
+[ 1623.191389]  sysfs_warn_dup+0x6c/0x90
+[ 1623.191395]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1623.191401]  sysfs_create_file_ns+0x78/0xd0
+[ 1623.191406]  device_create_file+0x60/0xb8
+[ 1623.191412]  am_adap_parse_dt+0x2e8/0x300 [iv009_isp]
+[ 1623.191489]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1623.191563]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1623.191637]  platform_probe+0x64/0xb8
+[ 1623.191643]  really_probe+0xc8/0x3a0
+[ 1623.191647]  __driver_probe_device+0x8c/0x1a0
+[ 1623.191651]  driver_probe_device+0x44/0x130
+[ 1623.191656]  __driver_attach+0xcc/0x208
+[ 1623.191660]  bus_for_each_dev+0x84/0x100
+[ 1623.191664]  driver_attach+0x2c/0x40
+[ 1623.191668]  bus_add_driver+0x118/0x250
+[ 1623.191672]  driver_register+0x70/0x138
+[ 1623.191677]  __platform_driver_register+0x2c/0x40
+[ 1623.191682]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1623.191756]  do_one_initcall+0x60/0x2f8
+[ 1623.191762]  do_init_module+0x5c/0x270
+[ 1623.191768]  load_module+0x1ba0/0x2200
+[ 1623.191773]  init_module_from_file+0x90/0xe0
+[ 1623.191779]  __arm64_sys_finit_module+0x26c/0x368
+[ 1623.191784]  invoke_syscall+0x4c/0x100
+[ 1623.191789]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1623.191795]  do_el0_svc+0x24/0x38
+[ 1623.191800]  el0_svc+0x38/0x120
+[ 1623.191804]  el0t_64_sync_handler+0xa0/0xe8
+[ 1623.191808]  el0t_64_sync+0x198/0x1a0
+[ 1623.191869] isp_platform_probe@main_kernel_juno_v4l2.c:731 GENERIC(ERR) :
+[ 1623.341750] isp init clock is 666 MHZ
+[ 1623.352124] 
+[ 1623.353637] isp_platform_probe@main_kernel_juno_v4l2.c:744 GENERIC(ERR) :
+[ 1623.353639] mipi init clock is 199 MHZ
+[ 1623.364087] 
+[ 1623.370609] interrupt comes in (irq = 45) without app handler, status: 0x200, pusle mode:0
+[ 1623.375590] isp_platform_probe@main_kernel_juno_v4l2.c:757 GENERIC(ERR) :
+[ 1623.376150] register v4l2 driver. result 0.
+[ 1623.382922] 
+[ 1623.388543] isp_platform_probe@main_kernel_juno_v4l2.c:767 GENERIC(ERR) :
+[ 1623.388546] --------------------------------
+[ 1623.395308] 
+[ 1623.401023] isp_platform_probe@main_kernel_juno_v4l2.c:768 GENERIC(ERR) :
+[ 1623.401026] Register 3 subdevices
+[ 1623.407788] 
+[ 1623.412550] isp_platform_probe@main_kernel_juno_v4l2.c:769 GENERIC(ERR) :
+[ 1623.412553] --------------------------------
+[ 1623.419315] 
+[ 1623.425045] acamera_camera_async_bound@main_kernel_juno_v4l2.c:172 GENERIC(ERR) :
+[ 1623.425048] bound called with sd 0x32420f8, asc 0x7f5a4240, sd->dev 0x365f020, name imx415 0-001a
+[ 1623.432489] 
+[ 1623.442799] acamera_camera_async_complete@main_kernel_juno_v4l2.c:226 GENERIC(ERR) :
+[ 1623.442802] complete called
+[ 1623.450570] 
+[ 1623.454757] acamera_camera_async_complete@main_kernel_juno_v4l2.c:228 GENERIC(ERR) :
+[ 1623.454760] starting V4L2 firmware
+[ 1623.462481] 
+[ 1623.467634] isp_v4l2_ctrl_s_ctrl_standard@isp-v4l2-ctrl.c:42 GENERIC(ERR) :
+[ 1623.467637] Control - id:0x980900, val:128, is_int:1, min:0, max:255.
+[ 1623.480695] 
+[ 1623.482166] isp_fw_do_set_brightness@fw-interface.c:1112 GENERIC(ERR) :
+[ 1623.482169] ISP FW not inited yet
+[ 1623.488744] 
+[ 1623.510285] acamera_init@acamera.c:336 GENERIC(ERR) :
+[ 1623.510294] Success get product id: 0x00000a62
+[ 1623.515006] 
+[ 1623.517882] general_set_wdr_mode@general_func.c:453 GENERAL(CRIT) :
+[ 1623.517888] Setting Linear Binary Sequence
+[ 1623.526787] 
+[ 1623.528256] acamera_camera_v4l2_get_subdev_by_prefix@main_kernel_juno_v4l2.c:144 GENERIC(ERR) :
+[ 1623.528258] Matched subdev 'imx415 0-001a' for prefix 'imx415'
+[ 1623.536921] 
+[ 1623.544204] sensor_print_params@V4L2_drv.c:227 GENERIC(CRIT) :
+[ 1623.544206] IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000, exp 4..2242, again_log2_max 1306235
+[ 1623.550008] 
+[ 1623.561009] AM_MIPI: am_mipi_phy_init:Settle:0x00000018
+[ 1623.566240] AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+[ 1623.571875] AM_MIPI: am_mipi_init:Success mipi init
+[ 1623.576718] AM_ADAP: inject_data_flag = 0, dump_data_flag = 0
+[ 1623.582439] AM_ADAP: reader : width = 3864, val = 302
+[ 1623.587455] AM_ADAP: frontend : width = 3864, val = 302
+[ 1623.592669] sensor_set_iface@V4L2_drv.c:278 GENERIC(CRIT) :
+[ 1623.592672] MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+[ 1623.598220] 
+[ 1623.606096] get_calibrations_v4l2@acamera_get_calibrations_v4l2.c:136 GENERIC(CRIT) :
+[ 1623.606099] Loaded imx415 calibrations, ctx_id:0 wdr_mode:0 ret:0
+[ 1623.613891] 
+[ 1623.622471] sensor_configure_buffers@sensor_func.c:248 SENSOR(ERR) :
+[ 1623.622476] No output buffers for temper block provided in settings. Temper is disabled (msb dma off: 0)
+[ 1623.627758] 
+[ 1623.638976] sbuf_mgr_alloc_sbuf@sbuf_func.c:174 SBUF(CRIT) :
+[ 1623.638979] sbuf: len_needed: 234096, len_alloc: 241663, len_used: 237568, page_size: 4096, buf_alloc: 000000006924ed2e, buf_used: 000000006924ed2e.
+[ 1623.644330] 
+[ 1623.659036] sbuf_calibration_init@sbuf_func.c:452 SBUF(ERR) :
+[ 1623.659039] sbuf_calibration_init.
+[ 1623.664759] 
+[ 1623.669605] get_cur_calibration_total_size@sbuf_func.c:310 SBUF(ERR) :
+[ 1623.669607] fw_instance: 00000000848d7fd0, CALIBRATION_TOTAL_SIZE: 123.
+[ 1623.676110] 
+[ 1623.684165] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.684168] Error: LUT 39 is NULL(0000000000000000), not inited.
+[ 1623.690668] 
+[ 1623.698124] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.698126] Error: LUT 40 is NULL(0000000000000000), not inited.
+[ 1623.704625] 
+[ 1623.712070] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.712073] Error: LUT 43 is NULL(0000000000000000), not inited.
+[ 1623.718575] 
+[ 1623.726059] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.726062] Error: LUT 44 is NULL(0000000000000000), not inited.
+[ 1623.732538] 
+[ 1623.739977] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.739980] Error: LUT 45 is NULL(0000000000000000), not inited.
+[ 1623.746486] 
+[ 1623.753993] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.753996] Error: LUT 74 is NULL(0000000000000000), not inited.
+[ 1623.760487] 
+[ 1623.767884] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.767886] Error: LUT 75 is NULL(0000000000000000), not inited.
+[ 1623.774437] 
+[ 1623.781846] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.781849] Error: LUT 104 is NULL(0000000000000000), not inited.
+[ 1623.788345] 
+[ 1623.795877] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.795879] Error: LUT 105 is NULL(0000000000000000), not inited.
+[ 1623.802386] 
+[ 1623.809923] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.809925] Error: LUT 107 is NULL(0000000000000000), not inited.
+[ 1623.816425] 
+[ 1623.823957] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.823959] Error: LUT 120 is NULL(0000000000000000), not inited.
+[ 1623.830464] 
+[ 1623.838003] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.838006] Error: LUT 121 is NULL(0000000000000000), not inited.
+[ 1623.844505] 
+[ 1623.852037] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1623.852039] Error: LUT 122 is NULL(0000000000000000), not inited.
+[ 1623.858540] 
+[ 1623.866083] get_cur_calibration_total_size@sbuf_func.c:325 SBUF(ERR) :
+[ 1623.866086] Total size for all IQ LUTs is 24390 bytes
+[ 1623.872584] 
+[ 1623.879100] sbuf_mgr_item_count_in_using@sbuf_func.c:427 SBUF(ERR) :
+[ 1623.879104] sbuf item using total count: 0.
+[ 1623.885418] 
+[ 1623.891037] update_cur_calibration_to_sbuf@sbuf_func.c:362 SBUF(ERR) :
+[ 1623.891040] sbuf_cali_base: 000000001396b5c8, p_sbuf_lut_arr: 000000001396b5c8, p_sbuf_cali_data: 0000000088ca5725
+[ 1623.897547] 
+[ 1623.909346] sbuf_calibration_init@sbuf_func.c:493 SBUF(CRIT) :
+[ 1623.909348] sbuf_calibration wdr_mode updated: 65535 -> 0.
+[ 1623.915136] 
+[ 1623.922078] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1623.922081] DMA_WRITER: Failed to initialize a dma writer type:0 output. 0x0 
+[ 1623.927879] 
+[ 1623.936452] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1623.936454] DMA_WRITER: Failed to initialize a dma writer type:1 output. 0x0 
+[ 1623.942262] 
+[ 1623.950840] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:114 GENERIC(ERR) :
+[ 1623.950842] Requested a pointer to the subdev with a name SocLens
+[ 1623.959340] 
+[ 1623.966871] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:121 GENERIC(ERR) :
+[ 1623.966873] Return subdev pointer 0x0
+[ 1623.975373] 
+[ 1623.980477] lens_init@lens_init.c:144 GENERIC(ERR) :
+[ 1623.980479] NO VALID SENSOR DRIVER FOUND bus:0x0
+[ 1623.985425] 
+[ 1623.992847] acamera_init_context_seq@acamera_fw.c:603 GENERIC(ERR) :
+[ 1623.992850] load isp context sequence[9]
+[ 1624.001715] 
+[ 1624.003190] AM_SC: 1231, g_sc is NULL.
+[ 1624.009085] connection_thread@main_firmware.c:102 GENERIC(CRIT) :
+[ 1624.009089] connection_thread start
+[ 1624.009128] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1624.009403] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1624.009406] isp_v4l2_create_instance@isp-v4l2.c:987 GENERIC(CRIT) :
+[ 1624.009408] V4L2 capture device registered as video1.
+[ 1624.009411] 
+[ 1624.009457] isp_platform_probe@main_kernel_juno_v4l2.c:838 GENERIC(ERR) :
+[ 1624.009459] Init finished. async register notifier result 0. Waiting for subdevices
+[ 1624.009461] 
+[ 1624.010936] 
+[ 1624.011935] isp_fw_process start
+[ 1624.022499] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1624.025492] 
+[ 1624.026372] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1624.081692] 
+[ 1624.083267] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1624.083270] Stream off 4
+[ 1624.091801] 
+[ 1653.088037] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1653.088049] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1653.099813] 
+[ 1653.101348] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1341 GENERIC(ERR) :
+[ 1653.101351] [Stream#1] pixel format for meta port must be 0x4154454d, not 0x00000000. Correct it!!
+[ 1653.108271] 
+[ 1653.118675] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1653.118678] [Stream#2] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1653.134264] 
+[ 1653.135748] isp_v4l2_s_fmt_vid_cap@isp-v4l2.c:395 GENERIC(CRIT) :
+[ 1653.135751] isp_v4l2_s_fmt_vid_cap sid:2
+[ 1653.141825] 
+[ 1653.147194] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1454 GENERIC(CRIT) :
+[ 1653.147197] [Stream#2]   - SET fmt - width: 1920, height: 1080, format: 0x3231564e.
+[ 1653.154302] 
+[ 1653.163389] _update_ds@crop_func.c:173 CROP(CRIT) :
+[ 1653.163392] TRACE DS update: Crop: e 0 x 0, y 0, w 0, h 0, Downscaler: e 1, w 1920, h 1080 -> ds 1920x1080
+[ 1653.168243] 
+[ 1653.179344] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1533 GENERIC(CRIT) :
+[ 1653.179346] [Stream#2]   - New fmt - width: 1920, height: 1080, format: 0x3231564e, type:     9. 
+[ 1653.186436] 
+[ 1653.196858] isp_v4l2_s_fmt_vid_cap@isp-v4l2.c:395 GENERIC(CRIT) :
+[ 1653.196861] isp_v4l2_s_fmt_vid_cap sid:0
+[ 1653.202825] 
+[ 1653.208187] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1454 GENERIC(CRIT) :
+[ 1653.208189] [Stream#0]   - SET fmt - width: 3864, height: 2192, format: 0x3231564e.
+[ 1653.215301] 
+[ 1653.224397] fw_intf_stream_set_resolution@fw-interface.c:626 GENERIC(CRIT) :
+[ 1653.224400] Setting new resolution : width = 3864, height = 2192 (preset idx = 0, fps = 60)
+[ 1653.231416] 
+[ 1653.241219] sensor_print_params@V4L2_drv.c:227 GENERIC(CRIT) :
+[ 1653.241221] IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000, exp 4..2242, again_log2_max 1306235
+[ 1653.247021] 
+[ 1653.258019] AM_MIPI: am_mipi_phy_init:Settle:0x00000018
+[ 1653.263229] AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+[ 1653.268861] AM_MIPI: am_mipi_init:Success mipi init
+[ 1653.273719] AM_ADAP: inject_data_flag = 0, dump_data_flag = 0
+[ 1653.279445] AM_ADAP: reader : width = 3864, val = 302
+[ 1653.284461] AM_ADAP: frontend : width = 3864, val = 302
+[ 1653.289658] sensor_set_iface@V4L2_drv.c:278 GENERIC(CRIT) :
+[ 1653.289660] MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+[ 1653.295206] 
+[ 1653.303090] get_calibrations_v4l2@acamera_get_calibrations_v4l2.c:136 GENERIC(CRIT) :
+[ 1653.303092] Loaded imx415 calibrations, ctx_id:0 wdr_mode:0 ret:0
+[ 1653.310890] 
+[ 1653.319802] sbuf_update_calibration_data@sbuf_func.c:506 SBUF(ERR) :
+[ 1653.319805] +++ sbuf_update_calibration_data
+[ 1653.324758] 
+[ 1653.330474] sbuf_calibration_init@sbuf_func.c:452 SBUF(ERR) :
+[ 1653.330476] sbuf_calibration_init.
+[ 1653.336200] 
+[ 1653.341053] sbuf_update_calibration_data@sbuf_func.c:516 SBUF(ERR) :
+[ 1653.341056] --- sbuf_update_calibration_data
+[ 1653.347380] 
+[ 1653.353100] sensor_configure_buffers@sensor_func.c:248 SENSOR(ERR) :
+[ 1653.353103] No output buffers for temper block provided in settings. Temper is disabled (msb dma off: 0)
+[ 1653.359426] 
+[ 1653.371387] AM_SC: 1204, g_sc is NULL.
+[ 1653.374123] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1533 GENERIC(CRIT) :
+[ 1653.374127] [Stream#0]   - New fmt - width: 3864, height: 2192, format: 0x3231564e, type:     9. 
+[ 1653.381192] 
+[ 1653.424484] isp_v4l2_streamon@isp-v4l2.c:468 GENERIC(CRIT) :
+[ 1653.424496] TRACE streamon: about to call vb2_streamon
+[ 1653.425460] 
+[ 1653.432046] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.432049] TRACE wfq: type=0 len=1 enabled=0 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.439064] 
+[ 1653.448592] dma_writer_write_frame_queue@dma_writer.c:306 DMA_WRITER(CRIT) :
+[ 1653.448595] TRACE dma arm: pipe=0 3864x2192 stride=3968 need=8697856 have=8699904 | uv fmt=77 stride=3968 need=4348928 have=4349952
+[ 1653.455616] 
+[ 1653.468884] dma_writer_write_frame_queue@dma_writer.c:357 DMA_WRITER(CRIT) :
+[ 1653.468887] TRACE dma armed readback: pipe=0 fmt=13 3864x2192 | uv fmt=77 3864x2192
+[ 1653.475901] 
+[ 1653.485003] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.485005] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.492021] 
+[ 1653.501545] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.501548] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.508573] 
+[ 1653.518099] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.518101] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.525146] 
+[ 1653.534652] isp_v4l2_streamon@isp-v4l2.c:470 GENERIC(CRIT) :
+[ 1653.534654] TRACE streamon: vb2_streamon returned rc = 0
+[ 1653.540293] 
+[ 1653.547044] isp_v4l2_streamon@isp-v4l2.c:477 GENERIC(CRIT) :
+[ 1653.547046] TRACE streamon: about to call isp_v4l2_stream_on
+[ 1653.552688] 
+[ 1653.559785] isp_v4l2_stream_on@isp-v4l2-stream.c:1171 GENERIC(CRIT) :
+[ 1653.559787] TRACE stream_on: [Stream#0] about to kthread_run copy thread
+[ 1653.566203] 
+[ 1653.574448] isp_v4l2_stream_on@isp-v4l2-stream.c:1177 GENERIC(CRIT) :
+[ 1653.574453] TRACE stream_on: [Stream#0] stream_thread pid: 5130
+[ 1653.580774] 
+[ 1653.588124] isp_v4l2_stream_on@isp-v4l2-stream.c:1187 GENERIC(CRIT) :
+[ 1653.588127] TRACE stream_on: [Stream#0] about to call fw_intf_stream_start
+[ 1653.594541] 
+[ 1653.602860] fw_intf_stream_start@fw-interface.c:400 GENERIC(CRIT) :
+[ 1653.602863] TRACE fw_intf_stream_start: about to acamera_command(SENSOR_STREAMING, ON)
+[ 1653.609114] 
+[ 1653.619503] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.619509] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.624965] 
+[ 1653.637192] start_streaming@V4L2_drv.c:616 GENERIC(CRIT) :
+[ 1653.637196] start_streaming: entering, about to call sensor s_stream(1)
+[ 1653.641659] 
+[ 1653.781041] start_streaming@V4L2_drv.c:618 GENERIC(CRIT) :
+[ 1653.781045] start_streaming: sensor s_stream(1) returned rc = 0
+[ 1653.781946] 
+[ 1653.789182] start_streaming@V4L2_drv.c:625 GENERIC(CRIT) :
+[ 1653.789186] imx415 streaming on
+[ 1653.794604] 
+[ 1653.799185] fw_intf_stream_start@fw-interface.c:402 GENERIC(CRIT) :
+[ 1653.799188] TRACE fw_intf_stream_start: acamera_command(SENSOR_STREAMING, ON) returned, rc = 0
+[ 1653.803117] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.805431] 
+[ 1653.805434] isp_v4l2_stream_on@isp-v4l2-stream.c:1190 GENERIC(CRIT) :
+[ 1653.805436] TRACE stream_on: [Stream#0] fw_intf_stream_start returned
+[ 1653.807145] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.808834] 
+[ 1653.809669] 
+[ 1653.811326] isp_v4l2_streamon@isp-v4l2.c:479 GENERIC(CRIT) :
+[ 1653.818649] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.824173] R(CRIT) :
+[ 1653.824175] TRACE streamon: isp_v4l2_stream_on returned rc = 0
+[ 1653.824177] 
+[ 1653.824989] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.872795] 
+[ 1653.883980] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1653.883983] cmos_mon_fe: cur: 6, pre: 2.
+[ 1653.889955] 
+[ 1653.895325] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.895328] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.901825] 
+[ 1653.913015] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.913018] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.919511] 
+[ 1653.933931] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.933935] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.939080] 
+[ 1653.953265] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1653.953269] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1653.955887] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1653.957291] 
+[ 1653.959159] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1653.979390] 
+[ 1653.990564] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1653.990567] cmos_mon_fe: cur: 12, pre: 10.
+[ 1653.996549] 
+[ 1654.002081] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1654.002084] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1654.008593] 
+[ 1654.019768] cmos_mointor_frame_start@cmos_func.c:494 CMOS(ERR) :
+[ 1654.019771] cmos_mon_fe: cur: 14, pre: 12.
+[ 1654.025743] 
+[ 1654.036098] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1654.036102] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1654.039318] 
+[ 1654.050298] dma_writer_pipe_update@dma_writer.c:496 DMA_WRITER(CRIT) :
+[ 1654.050303] TRACE dma_writer: active 3864x2192 type=13 line_offset=3968 frame_size=8697856 buf_size=8699904
+[ 1654.055366] 
+[ 1654.071234] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1654.071238] TRACE wfq: type=0 len=1 enabled=1 init=1 3864x2192 stride=3968 bufsz=8699904
+[ 1654.074479] 
+[ 1654.098547] AM_MIPI: am_mipi_deinit:Success mipi deinit
+[ 1654.099499] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1654.099502] Stream off 0
+[ 1654.107715] 
+[ 1654.109242] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1654.109245] Stream off 2
+[ 1654.117866] 
+[ 1654.119346] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1654.119349] Stream off 4
+[ 1654.127995] 
+[ 1654.129476] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1654.129479] Stream off 0
+[ 1654.138143] 
+[ 1676.994029] DS1_CROP_FIX_FRESH_20260915
+[ 1676.997768] fw_module_exit@main_kernel_juno_v4l2.c:934 GENERIC(ERR) :
+[ 1676.997781] Juno isp fw_module_exit
+[ 1677.003559] 
+[ 1677.005363] connection_thread@main_firmware.c:112 GENERIC(CRIT) :
+[ 1677.005377] connection_thread stop
+[ 1677.011101] 
+[ 1677.099779] isp_fw_process@main_firmware.c:138 GENERIC(CRIT) :
+[ 1677.099791] isp_fw_process stop
+[ 1677.103106] 
+[ 1677.108076] lens_v4l2_subdev_deinit@v4l2_vcm.c:244 GENERIC(CRIT) :
+[ 1677.108085] Lens context pointer is NULL
+[ 1677.113922] 
+[ 1677.121061] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:202 GENERIC(ERR) :
+[ 1677.121070] unbind called for subdevice sd 0x32420f8, asc 0x7f5a4240, sd->dev 0x365f020, name imx415 0-001a
+[ 1677.126798] 
+[ 1677.137972] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:157 GENERIC(ERR) :
+[ 1677.137977] Requested a index pointer with a name imx415 0-001a
+[ 1677.146384] 
+[ 1677.153719] acamera_camera_v4l2_get_index_by_name@main_kernel_juno_v4l2.c:163 GENERIC(ERR) :
+[ 1677.153722] Return index pointer 0x0
+[ 1677.162151] 
+[ 1677.167161] acamera_camera_async_unbind@main_kernel_juno_v4l2.c:208 GENERIC(ERR) :
+[ 1677.167164] stopping V4L2 firmware
+[ 1677.174697] 
+[ 1677.184855] AM_SC: Error g_sc is NULL
+[ 1677.185753] isp_platform_remove@main_kernel_juno_v4l2.c:902 GENERIC(ERR) :
+[ 1677.185756] Isp remove
+[ 1677.192934] 
+[ 1677.250036] fw_module_init@main_kernel_juno_v4l2.c:925 GENERIC(ERR) :
+[ 1677.250049] Juno isp fw_module_init
+[ 1677.255984] 
+[ 1677.257578] isp_module_check@main_kernel_juno_v4l2.c:592 GENERIC(ERR) :
+[ 1677.257582] isp efuse value: ff630038 4000
+[ 1677.268142] 
+[ 1677.269594] isp_platform_probe@main_kernel_juno_v4l2.c:631 GENERIC(ERR) :
+[ 1677.269597] pdev ff140000.isp has 1 resources
+[ 1677.280685] 
+[ 1677.282150] isp_platform_probe@main_kernel_juno_v4l2.c:635 GENERIC(ERR) :
+[ 1677.282152]   res[0] type=MEM start=0xff140000 end=0xff17ffff name=ISP
+[ 1677.295416] 
+[ 1677.296904] isp_platform_probe@main_kernel_juno_v4l2.c:662 GENERIC(ERR) :
+[ 1677.296908] Juno isp irq = 45 !
+[ 1677.306761] 
+[ 1677.308247] isp_platform_probe@main_kernel_juno_v4l2.c:673 GENERIC(ERR) :
+[ 1677.308250] Juno isp address = 0xff140000, end = 0xff17ffff !
+[ 1677.320779] 
+[ 1677.327232] isp_platform_probe@main_kernel_juno_v4l2.c:692 GENERIC(ERR) :
+[ 1677.327236] Success to get link device: isp-sc
+[ 1677.334503] 
+[ 1677.335988] AM_SC: am_sc_parse_dt: Error match compatible
+[ 1677.341362] isp_platform_probe@main_kernel_juno_v4l2.c:715 GENERIC(ERR) :
+[ 1677.341365] Success to get phy-csi node: phy-csi
+[ 1677.352703] 
+[ 1677.354180] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: name: csi2_phy0
+[ 1677.360596] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: name: csi2_phy1
+[ 1677.367018] AM_MIPI: am_mipi_parse_dt: rs idx 2 info: name: aphy_reg
+[ 1677.373346] AM_MIPI: am_mipi_parse_dt: rs idx 3 info: name: csi0_host
+[ 1677.379792] AM_MIPI: am_mipi_parse_dt: rs idx 4 info: name: csi1_host
+[ 1677.386177] AM_MIPI: am_mipi_parse_dt: rs idx 0 info: irq 46
+[ 1677.391803] AM_MIPI: am_mipi_parse_dt: rs idx 1 info: irq 47
+[ 1677.397430] AM_MIPI: am_mipi_parse_dt:Success to get link device: isp-adapter
+[ 1677.404541] AM_ADAP: am_adap_parse_dt: rs idx info: name: adapter
+[ 1677.410612] AM_ADAP: am_adap_parse_dt:rs info: irq: 48
+[ 1677.415716] AM_ADAP: no reserved mem for adapter (-19); DDR/DOL modes unavailable
+[ 1677.423160] AM_ADAP: adapter alloc 48M memory
+[ 1677.427503] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/adapt_frame'
+[ 1677.436958] CPU: 3 UID: 0 PID: 5346 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1677.436967] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1677.436969] Hardware name: Khadas VIM3 (DT)
+[ 1677.436971] Call trace:
+[ 1677.436974]  show_stack+0x34/0x98 (C)
+[ 1677.436987]  dump_stack_lvl+0x60/0x80
+[ 1677.436995]  dump_stack+0x18/0x24
+[ 1677.437001]  sysfs_warn_dup+0x6c/0x90
+[ 1677.437008]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1677.437014]  sysfs_create_file_ns+0x78/0xd0
+[ 1677.437020]  device_create_file+0x60/0xb8
+[ 1677.437027]  am_adap_parse_dt+0x2c8/0x300 [iv009_isp]
+[ 1677.437113]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1677.437189]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1677.437263]  platform_probe+0x64/0xb8
+[ 1677.437269]  really_probe+0xc8/0x3a0
+[ 1677.437274]  __driver_probe_device+0x8c/0x1a0
+[ 1677.437278]  driver_probe_device+0x44/0x130
+[ 1677.437282]  __driver_attach+0xcc/0x208
+[ 1677.437287]  bus_for_each_dev+0x84/0x100
+[ 1677.437291]  driver_attach+0x2c/0x40
+[ 1677.437295]  bus_add_driver+0x118/0x250
+[ 1677.437299]  driver_register+0x70/0x138
+[ 1677.437304]  __platform_driver_register+0x2c/0x40
+[ 1677.437309]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1677.437383]  do_one_initcall+0x60/0x2f8
+[ 1677.437391]  do_init_module+0x5c/0x270
+[ 1677.437397]  load_module+0x1ba0/0x2200
+[ 1677.437403]  init_module_from_file+0x90/0xe0
+[ 1677.437408]  __arm64_sys_finit_module+0x26c/0x368
+[ 1677.437414]  invoke_syscall+0x4c/0x100
+[ 1677.437420]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1677.437425]  do_el0_svc+0x24/0x38
+[ 1677.437430]  el0_svc+0x38/0x120
+[ 1677.437436]  el0t_64_sync_handler+0xa0/0xe8
+[ 1677.437440]  el0t_64_sync+0x198/0x1a0
+[ 1677.437453] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/inject_frame'
+[ 1677.596875] CPU: 2 UID: 0 PID: 5346 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1677.596884] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1677.596886] Hardware name: Khadas VIM3 (DT)
+[ 1677.596888] Call trace:
+[ 1677.596889]  show_stack+0x34/0x98 (C)
+[ 1677.596899]  dump_stack_lvl+0x60/0x80
+[ 1677.596906]  dump_stack+0x18/0x24
+[ 1677.596911]  sysfs_warn_dup+0x6c/0x90
+[ 1677.596918]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1677.596925]  sysfs_create_file_ns+0x78/0xd0
+[ 1677.596930]  device_create_file+0x60/0xb8
+[ 1677.596936]  am_adap_parse_dt+0x2d8/0x300 [iv009_isp]
+[ 1677.597016]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1677.597091]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1677.597165]  platform_probe+0x64/0xb8
+[ 1677.597171]  really_probe+0xc8/0x3a0
+[ 1677.597176]  __driver_probe_device+0x8c/0x1a0
+[ 1677.597181]  driver_probe_device+0x44/0x130
+[ 1677.597185]  __driver_attach+0xcc/0x208
+[ 1677.597189]  bus_for_each_dev+0x84/0x100
+[ 1677.597193]  driver_attach+0x2c/0x40
+[ 1677.597197]  bus_add_driver+0x118/0x250
+[ 1677.597201]  driver_register+0x70/0x138
+[ 1677.597206]  __platform_driver_register+0x2c/0x40
+[ 1677.597211]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1677.597286]  do_one_initcall+0x60/0x2f8
+[ 1677.597292]  do_init_module+0x5c/0x270
+[ 1677.597298]  load_module+0x1ba0/0x2200
+[ 1677.597304]  init_module_from_file+0x90/0xe0
+[ 1677.597309]  __arm64_sys_finit_module+0x26c/0x368
+[ 1677.597315]  invoke_syscall+0x4c/0x100
+[ 1677.597321]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1677.597327]  do_el0_svc+0x24/0x38
+[ 1677.597332]  el0_svc+0x38/0x120
+[ 1677.597337]  el0t_64_sync_handler+0xa0/0xe8
+[ 1677.597341]  el0t_64_sync+0x198/0x1a0
+[ 1677.597357] sysfs: cannot create duplicate filename '/devices/platform/ff650000.isp-adapter/dol_frame'
+[ 1677.756524] CPU: 5 UID: 0 PID: 5346 Comm: modprobe Tainted: G         C O        6.18.44-current-meson64 #1 PREEMPT 
+[ 1677.756540] Tainted: [C]=CRAP, [O]=OOT_MODULE
+[ 1677.756542] Hardware name: Khadas VIM3 (DT)
+[ 1677.756545] Call trace:
+[ 1677.756547]  show_stack+0x34/0x98 (C)
+[ 1677.756561]  dump_stack_lvl+0x60/0x80
+[ 1677.756568]  dump_stack+0x18/0x24
+[ 1677.756574]  sysfs_warn_dup+0x6c/0x90
+[ 1677.756582]  sysfs_add_file_mode_ns+0x12c/0x140
+[ 1677.756588]  sysfs_create_file_ns+0x78/0xd0
+[ 1677.756593]  device_create_file+0x60/0xb8
+[ 1677.756600]  am_adap_parse_dt+0x2e8/0x300 [iv009_isp]
+[ 1677.756687]  am_mipi_parse_dt+0x4ec/0x500 [iv009_isp]
+[ 1677.756762]  isp_platform_probe+0x374/0x9c8 [iv009_isp]
+[ 1677.756837]  platform_probe+0x64/0xb8
+[ 1677.756844]  really_probe+0xc8/0x3a0
+[ 1677.756848]  __driver_probe_device+0x8c/0x1a0
+[ 1677.756853]  driver_probe_device+0x44/0x130
+[ 1677.756857]  __driver_attach+0xcc/0x208
+[ 1677.756861]  bus_for_each_dev+0x84/0x100
+[ 1677.756865]  driver_attach+0x2c/0x40
+[ 1677.756869]  bus_add_driver+0x118/0x250
+[ 1677.756873]  driver_register+0x70/0x138
+[ 1677.756878]  __platform_driver_register+0x2c/0x40
+[ 1677.756883]  fw_module_init+0x54/0xff8 [iv009_isp]
+[ 1677.756957]  do_one_initcall+0x60/0x2f8
+[ 1677.756964]  do_init_module+0x5c/0x270
+[ 1677.756971]  load_module+0x1ba0/0x2200
+[ 1677.756977]  init_module_from_file+0x90/0xe0
+[ 1677.756982]  __arm64_sys_finit_module+0x26c/0x368
+[ 1677.756987]  invoke_syscall+0x4c/0x100
+[ 1677.756993]  el0_svc_common.constprop.0+0x48/0xf0
+[ 1677.756999]  do_el0_svc+0x24/0x38
+[ 1677.757004]  el0_svc+0x38/0x120
+[ 1677.757010]  el0t_64_sync_handler+0xa0/0xe8
+[ 1677.757014]  el0t_64_sync+0x198/0x1a0
+[ 1677.757084] isp_platform_probe@main_kernel_juno_v4l2.c:731 GENERIC(ERR) :
+[ 1677.906867] isp init clock is 666 MHZ
+[ 1677.917269] 
+[ 1677.918772] isp_platform_probe@main_kernel_juno_v4l2.c:744 GENERIC(ERR) :
+[ 1677.918774] mipi init clock is 199 MHZ
+[ 1677.929208] 
+[ 1677.935748] interrupt comes in (irq = 45) without app handler, status: 0x200, pusle mode:0
+[ 1677.940730] isp_platform_probe@main_kernel_juno_v4l2.c:757 GENERIC(ERR) :
+[ 1677.941292] register v4l2 driver. result 0.
+[ 1677.948062] 
+[ 1677.953686] isp_platform_probe@main_kernel_juno_v4l2.c:767 GENERIC(ERR) :
+[ 1677.953689] --------------------------------
+[ 1677.960454] 
+[ 1677.966166] isp_platform_probe@main_kernel_juno_v4l2.c:768 GENERIC(ERR) :
+[ 1677.966168] Register 3 subdevices
+[ 1677.972930] 
+[ 1677.977692] isp_platform_probe@main_kernel_juno_v4l2.c:769 GENERIC(ERR) :
+[ 1677.977695] --------------------------------
+[ 1677.984460] 
+[ 1677.990190] acamera_camera_async_bound@main_kernel_juno_v4l2.c:172 GENERIC(ERR) :
+[ 1677.990192] bound called with sd 0x32420f8, asc 0x7f5a4040, sd->dev 0x365f020, name imx415 0-001a
+[ 1677.997630] 
+[ 1678.007947] acamera_camera_async_complete@main_kernel_juno_v4l2.c:226 GENERIC(ERR) :
+[ 1678.007950] complete called
+[ 1678.015660] 
+[ 1678.019904] acamera_camera_async_complete@main_kernel_juno_v4l2.c:228 GENERIC(ERR) :
+[ 1678.019906] starting V4L2 firmware
+[ 1678.027619] 
+[ 1678.032778] isp_v4l2_ctrl_s_ctrl_standard@isp-v4l2-ctrl.c:42 GENERIC(ERR) :
+[ 1678.032782] Control - id:0x980900, val:128, is_int:1, min:0, max:255.
+[ 1678.045827] 
+[ 1678.047289] isp_fw_do_set_brightness@fw-interface.c:1112 GENERIC(ERR) :
+[ 1678.047292] ISP FW not inited yet
+[ 1678.053878] 
+[ 1678.075787] acamera_init@acamera.c:336 GENERIC(ERR) :
+[ 1678.075798] Success get product id: 0x00000a62
+[ 1678.080513] 
+[ 1678.083395] general_set_wdr_mode@general_func.c:453 GENERAL(CRIT) :
+[ 1678.083405] Setting Linear Binary Sequence
+[ 1678.092294] 
+[ 1678.093765] acamera_camera_v4l2_get_subdev_by_prefix@main_kernel_juno_v4l2.c:144 GENERIC(ERR) :
+[ 1678.093769] Matched subdev 'imx415 0-001a' for prefix 'imx415'
+[ 1678.102437] 
+[ 1678.109711] sensor_print_params@V4L2_drv.c:227 GENERIC(CRIT) :
+[ 1678.109714] IMX415 bridge: 3864x2192 total 4510x2250, lines/s 135000, exp 4..2242, again_log2_max 1306235
+[ 1678.115518] 
+[ 1678.126516] AM_MIPI: am_mipi_phy_init:Settle:0x00000018
+[ 1678.131729] AM_MIPI: am_mipi_csi_init:csi version 0x3130322a
+[ 1678.137357] AM_MIPI: am_mipi_init:Success mipi init
+[ 1678.142210] AM_ADAP: inject_data_flag = 0, dump_data_flag = 0
+[ 1678.147936] AM_ADAP: reader : width = 3864, val = 302
+[ 1678.152958] AM_ADAP: frontend : width = 3864, val = 302
+[ 1678.158158] sensor_set_iface@V4L2_drv.c:278 GENERIC(CRIT) :
+[ 1678.158161] MIPI/adapter up: 4 lanes, ui 1, 3864x2192 RAW10, DIR_MODE
+[ 1678.163703] 
+[ 1678.171588] get_calibrations_v4l2@acamera_get_calibrations_v4l2.c:136 GENERIC(CRIT) :
+[ 1678.171590] Loaded imx415 calibrations, ctx_id:0 wdr_mode:0 ret:0
+[ 1678.179388] 
+[ 1678.187981] sensor_configure_buffers@sensor_func.c:248 SENSOR(ERR) :
+[ 1678.187986] No output buffers for temper block provided in settings. Temper is disabled (msb dma off: 0)
+[ 1678.193295] 
+[ 1678.204519] sbuf_mgr_alloc_sbuf@sbuf_func.c:174 SBUF(CRIT) :
+[ 1678.204523] sbuf: len_needed: 234096, len_alloc: 241663, len_used: 237568, page_size: 4096, buf_alloc: 000000006924ed2e, buf_used: 000000006924ed2e.
+[ 1678.209838] 
+[ 1678.224576] sbuf_calibration_init@sbuf_func.c:452 SBUF(ERR) :
+[ 1678.224582] sbuf_calibration_init.
+[ 1678.230275] 
+[ 1678.235112] get_cur_calibration_total_size@sbuf_func.c:310 SBUF(ERR) :
+[ 1678.235115] fw_instance: 00000000848d7fd0, CALIBRATION_TOTAL_SIZE: 123.
+[ 1678.241616] 
+[ 1678.249672] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.249675] Error: LUT 39 is NULL(0000000000000000), not inited.
+[ 1678.256181] 
+[ 1678.263623] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.263626] Error: LUT 40 is NULL(0000000000000000), not inited.
+[ 1678.270128] 
+[ 1678.277576] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.277579] Error: LUT 43 is NULL(0000000000000000), not inited.
+[ 1678.284143] 
+[ 1678.291530] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.291534] Error: LUT 44 is NULL(0000000000000000), not inited.
+[ 1678.298034] 
+[ 1678.305483] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.305486] Error: LUT 45 is NULL(0000000000000000), not inited.
+[ 1678.311992] 
+[ 1678.319438] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.319440] Error: LUT 74 is NULL(0000000000000000), not inited.
+[ 1678.325941] 
+[ 1678.333413] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.333416] Error: LUT 75 is NULL(0000000000000000), not inited.
+[ 1678.339903] 
+[ 1678.347344] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.347347] Error: LUT 104 is NULL(0000000000000000), not inited.
+[ 1678.353849] 
+[ 1678.361383] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.361385] Error: LUT 105 is NULL(0000000000000000), not inited.
+[ 1678.367891] 
+[ 1678.375423] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.375426] Error: LUT 107 is NULL(0000000000000000), not inited.
+[ 1678.381928] 
+[ 1678.389463] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.389466] Error: LUT 120 is NULL(0000000000000000), not inited.
+[ 1678.395976] 
+[ 1678.403503] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.403506] Error: LUT 121 is NULL(0000000000000000), not inited.
+[ 1678.410008] 
+[ 1678.417543] get_cur_calibration_total_size@sbuf_func.c:319 SBUF(ERR) :
+[ 1678.417546] Error: LUT 122 is NULL(0000000000000000), not inited.
+[ 1678.424053] 
+[ 1678.431583] get_cur_calibration_total_size@sbuf_func.c:325 SBUF(ERR) :
+[ 1678.431586] Total size for all IQ LUTs is 24390 bytes
+[ 1678.438095] 
+[ 1678.444607] sbuf_mgr_item_count_in_using@sbuf_func.c:427 SBUF(ERR) :
+[ 1678.444611] sbuf item using total count: 0.
+[ 1678.450926] 
+[ 1678.456544] update_cur_calibration_to_sbuf@sbuf_func.c:362 SBUF(ERR) :
+[ 1678.456547] sbuf_cali_base: 000000001396b5c8, p_sbuf_lut_arr: 000000001396b5c8, p_sbuf_cali_data: 0000000088ca5725
+[ 1678.463051] 
+[ 1678.474852] sbuf_calibration_init@sbuf_func.c:493 SBUF(CRIT) :
+[ 1678.474854] sbuf_calibration wdr_mode updated: 65535 -> 0.
+[ 1678.480641] 
+[ 1678.487576] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1678.487579] DMA_WRITER: Failed to initialize a dma writer type:0 output. 0x0 
+[ 1678.493381] 
+[ 1678.501958] dma_writer_init@dma_writer.c:155 DMA_WRITER(ERR) :
+[ 1678.501961] DMA_WRITER: Failed to initialize a dma writer type:1 output. 0x0 
+[ 1678.507770] 
+[ 1678.516346] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:114 GENERIC(ERR) :
+[ 1678.516350] Requested a pointer to the subdev with a name SocLens
+[ 1678.524846] 
+[ 1678.532377] acamera_camera_v4l2_get_subdev_by_name@main_kernel_juno_v4l2.c:121 GENERIC(ERR) :
+[ 1678.532380] Return subdev pointer 0x0
+[ 1678.540879] 
+[ 1678.545984] lens_init@lens_init.c:144 GENERIC(ERR) :
+[ 1678.545986] NO VALID SENSOR DRIVER FOUND bus:0x0
+[ 1678.550930] 
+[ 1678.558350] acamera_init_context_seq@acamera_fw.c:603 GENERIC(ERR) :
+[ 1678.558353] load isp context sequence[9]
+[ 1678.567215] 
+[ 1678.568698] AM_SC: 1231, g_sc is NULL.
+[ 1678.574649] connection_thread@main_firmware.c:102 GENERIC(CRIT) :
+[ 1678.574653] connection_thread start
+[ 1678.574806] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1678.575085] isp_fw_process@main_firmware.c:120 GENERIC(CRIT) :
+[ 1678.575088] isp_v4l2_create_instance@isp-v4l2.c:987 GENERIC(CRIT) :
+[ 1678.575091] V4L2 capture device registered as video1.
+[ 1678.575093] 
+[ 1678.575108] isp_platform_probe@main_kernel_juno_v4l2.c:838 GENERIC(ERR) :
+[ 1678.575110] Init finished. async register notifier result 0. Waiting for subdevices
+[ 1678.575113] 
+[ 1678.576493] 
+[ 1678.577408] isp_fw_process start
+[ 1678.595816] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1678.596677] 
+[ 1678.600437] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1678.648816] 
+[ 1678.650389] fw_intf_stream_stop@fw-interface.c:472 GENERIC(CRIT) :
+[ 1678.650399] Stream off 4
+[ 1678.658906] 
+[ 1707.584591] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1707.584604] [Stream#0] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1707.596292] 
+[ 1707.597730] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1341 GENERIC(ERR) :
+[ 1707.597734] [Stream#1] pixel format for meta port must be 0x4154454d, not 0x00000000. Correct it!!
+[ 1707.604718] 
+[ 1707.615134] isp_v4l2_stream_try_format@isp-v4l2-stream.c:1353 GENERIC(CRIT) :
+[ 1707.615137] [Stream#2] format 0x00000000 is not supported, setting default format 0x34424752.
+[ 1707.630730] 
+[ 1707.632199] isp_v4l2_s_fmt_vid_cap@isp-v4l2.c:395 GENERIC(CRIT) :
+[ 1707.632202] isp_v4l2_s_fmt_vid_cap sid:2
+[ 1707.638263] 
+[ 1707.643624] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1454 GENERIC(CRIT) :
+[ 1707.643627] [Stream#2]   - SET fmt - width: 1920, height: 1080, format: 0x3231564e.
+[ 1707.650745] 
+[ 1707.659838] _update_ds@crop_func.c:173 CROP(CRIT) :
+[ 1707.659841] TRACE DS update: Crop: e 0 x 0, y 0, w 0, h 0, Downscaler: e 1, w 1920, h 1080 -> ds 1920x1080
+[ 1707.664694] 
+[ 1707.675792] isp_v4l2_stream_set_format@isp-v4l2-stream.c:1533 GENERIC(CRIT) :
+[ 1707.675795] [Stream#2]   - New fmt - width: 1920, height: 1080, format: 0x3231564e, type:     9. 
+[ 1707.682895] 
+[ 1707.704653] isp_v4l2_streamon@isp-v4l2.c:468 GENERIC(CRIT) :
+[ 1707.704665] TRACE streamon: about to call vb2_streamon
+[ 1707.705616] 
+[ 1707.712202] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1707.712205] TRACE wfq: type=1 len=1 enabled=0 init=1 1920x1080 stride=1920 bufsz=2076672
+[ 1707.719232] 
+[ 1707.728749] dma_writer_write_frame_queue@dma_writer.c:306 DMA_WRITER(CRIT) :
+[ 1707.728752] TRACE dma arm: pipe=1 1920x1080 stride=1920 need=2073600 have=2076672 | uv fmt=77 stride=1920 need=1036800 have=1040384
+[ 1707.735784] 
+[ 1707.749029] dma_writer_write_frame_queue@dma_writer.c:357 DMA_WRITER(CRIT) :
+[ 1707.749032] TRACE dma armed readback: pipe=1 fmt=13 1920x1080 | uv fmt=77 1920x1080
+[ 1707.756057] 
+[ 1707.765178] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1707.765183] TRACE wfq: type=1 len=1 enabled=1 init=1 1920x1080 stride=1920 bufsz=2076672
+[ 1707.772174] 
+[ 1707.781702] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1707.781705] TRACE wfq: type=1 len=1 enabled=1 init=1 1920x1080 stride=1920 bufsz=2076672
+[ 1707.788726] 
+[ 1707.798256] dma_writer_write_frame_queue@dma_writer.c:251 DMA_WRITER(CRIT) :
+[ 1707.798258] TRACE wfq: type=1 len=1 enabled=1 init=1 1920x1080 stride=1920 bufsz=2076672
+[ 1707.805283] 
+[ 1707.814817] isp_v4l2_streamon@isp-v4l2.c:470 GENERIC(CRIT) :
+[ 1707.814820] TRACE streamon: vb2_streamon returned rc = 0
+[ 1707.820456] 
+[ 1707.827201] isp_v4l2_streamon@isp-v4l2.c:477 GENERIC(CRIT) :
+[ 1707.827204] TRACE streamon: about to call isp_v4l2_stream_on
+[ 1707.832843] 
+[ 1707.839941] isp_v4l2_stream_on@isp-v4l2-stream.c:1171 GENERIC(CRIT) :
+[ 1707.839944] TRACE stream_on: [Stream#2] about to kthread_run copy thread
+[ 1707.846363] 
+[ 1707.854660] isp_v4l2_stream_on@isp-v4l2-stream.c:1177 GENERIC(CRIT) :
+[ 1707.854664] TRACE stream_on: [Stream#2] stream_thread pid: 5564
+[ 1707.860930] 
+[ 1707.868305] isp_v4l2_stream_on@isp-v4l2-stream.c:1187 GENERIC(CRIT) :
+[ 1707.868308] TRACE stream_on: [Stream#2] about to call fw_intf_stream_start
+[ 1707.874710] 
+[ 1707.883031] fw_intf_stream_start@fw-interface.c:400 GENERIC(CRIT) :
+[ 1707.883034] TRACE fw_intf_stream_start: about to acamera_command(SENSOR_STREAMING, ON)
+[ 1707.889264] 
+[ 1707.900695] start_streaming@V4L2_drv.c:616 GENERIC(CRIT) :
+[ 1707.900698] start_streaming: entering, about to call sensor s_stream(1)
+[ 1707.904091] 
+[ 1708.046988] start_streaming@V4L2_drv.c:618 GENERIC(CRIT) :
+[ 1708.046992] start_streaming: sensor s_stream(1) returned rc = 0
+[ 1708.047871] 
+[ 1708.055066] start_streaming@V4L2_drv.c:625 GENERIC(CRIT) :
+[ 1708.055069] imx415 streaming on
+[ 1708.060530] 
