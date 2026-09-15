@@ -44,6 +44,26 @@ vertical_blanking = total_lines - 2192   # 6808 => 15 fps (max 1046383)
 Capturing at 60 and discarding frames costs roughly 4x the sensor readout, ISP
 work, power and heat for identical delivered output. Ask for the rate you want.
 
+Nothing here persists: a module reload or reboot returns the sensor to 60 fps
+and every ISP control to its default. `preview-ctl.sh start` re-applies the
+frame rate for that reason; anything else that cares must do the same.
+
+## Preview
+
+```sh
+preview-ctl.sh start [seconds] [fps]   # also sets the sensor rate
+preview-ctl.sh stop
+preview-ctl.sh restart
+preview-ctl.sh status
+```
+
+It runs as a transient systemd unit, because a backgrounded ssh command does
+not reliably survive this board's WiFi. `ffmpeg -listen 1` serves one client at
+a time, so `serve-mjpeg.sh` restarts the pipeline per client — a browser
+refresh reconnects instead of killing the viewer. It is still a diagnostic
+viewer, not a service: one viewer at a time, and a fan-out transport is a later
+measurement-driven decision.
+
 ## Tools
 
 | Tool | Purpose |
@@ -53,6 +73,10 @@ work, power and heat for identical delivered output. Ask for the rate you want.
 | `ds1soak.c` | long-run DS1 capture stability measurement |
 | `frds1.c` | FR streaming with DS1 configured but never armed (bring-up diagnostic) |
 | `ds1arm.c` | DS1 negotiate/REQBUF/QBUF, stops before STREAMON (bring-up diagnostic) |
+| `serve-mjpeg.sh` | DS1 -> MJPEG -> HTTP viewer, re-listens per client |
+| `preview-ctl.sh` | start / stop / restart / status for the preview |
+| `verify-preview.sh` | self-contained check that the HTTP path serves a client |
+| `vim3-camera-controls.sh` | every camera control as JSON, with derived fps |
 | `mjpeg-soak.sh` | DS1 -> MJPEG -> HTTP, instrumented as a soak |
 | `soak-monitor.sh` | CPU/memory/thermal/network sampler, TSV out |
 | `soak-report.py` | summarises a soak directory |

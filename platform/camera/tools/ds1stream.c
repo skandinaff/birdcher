@@ -23,6 +23,12 @@
  * frames, select timeouts, and a mean-absolute-difference against the previous
  * frame so a frozen pipeline is distinguishable from a static scene (a real
  * sensor never reads exactly 0.000).
+ *
+ * DS1_EXIT_ON_SINK_LOSS=1 makes a vanished consumer end the run. The two
+ * callers want opposite things: a soak measures capture and must not be ended
+ * by a dropped network client, while the preview server must let the pipeline
+ * finish so it can re-listen for the next browser. Default is to keep
+ * capturing, which is the soak's need.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,6 +105,8 @@ int main(int argc, char **argv)
     int i, type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     unsigned long got = 0, wrote = 0, drops = 0, frozen = 0, timeouts = 0, shorts = 0;
     int sink_ok = 1;
+    int exit_on_sink_loss = getenv("DS1_EXIT_ON_SINK_LOSS") != NULL &&
+                            getenv("DS1_EXIT_ON_SINK_LOSS")[0] == '1';
     unsigned int prev_seq = 0; int have_prev = 0;
     unsigned char *prev_y = NULL; int have_prev_y = 0;
     double mad_sum = 0.0, mad_min = 1e9, mad_max = 0.0;
@@ -188,9 +196,14 @@ int main(int argc, char **argv)
         if (sink_ok && got % (unsigned long)decim == 0) {
             if (write_all(STDOUT_FILENO, map[b.index][0], len[b.index][0]) < 0 ||
                 write_all(STDOUT_FILENO, map[b.index][1], len[b.index][1]) < 0) {
-                fprintf(stderr, "[%6.0fs] stdout closed after %lu written frames; continuing capture\n",
-                        now() - t0, wrote);
+                fprintf(stderr, "[%6.0fs] stdout closed after %lu written frames; %s\n",
+                        now() - t0, wrote,
+                        exit_on_sink_loss ? "ending run" : "continuing capture");
                 sink_ok = 0;
+                if (exit_on_sink_loss) {
+                    ioctl(ds1, VIDIOC_QBUF, &b);
+                    break;
+                }
             } else {
                 wrote++;
             }
