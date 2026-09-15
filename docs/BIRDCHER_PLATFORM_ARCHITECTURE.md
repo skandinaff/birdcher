@@ -83,19 +83,42 @@ Birdcher should not need to know about:
 
 Those belong to the platform.
 
-### 3.3 One owner for the camera
+### 3.3 One lifetime owner for the camera
 
-Only one runtime component should own the V4L2 camera pipeline.
+For the current Amlogic/Khadas ISP driver this is a **hard constraint of the vendor V4L2 ABI**, not merely an application design preference.
+
+The driver exposes several logical ISP streams through one video node and assigns `stream_id` by file-open order. With the current layout the relevant identities are:
 
 ```text
-CameraCapture
-    ├── Preview
-    ├── Detector
-    ├── Recorder
-    └── Diagnostics
+first open   → stream 0 → FR
+second open  → stream 1 → META
+third open   → stream 2 → DS1
 ```
 
-Independent consumers must not open the camera device themselves unless explicitly running a standalone platform test.
+Closing a handle releases that stream slot and deinitializes the associated stream object. Therefore stream identity is not encoded in the device-node name and must not be inferred by an independent process opening `/dev/video1`.
+
+The platform camera layer must hide this ABI quirk. A long-lived `CameraSession`/`CameraCapture` component should open and retain all required handles for its lifetime, map them to stable platform-level names such as `FR`, `META`, and `DS1`, and distribute frames internally:
+
+```text
+/dev/video1
+    ↓
+CameraSession
+    ├── FR handle
+    ├── META handle
+    └── DS1 handle
+           ↓
+      FrameDistributor
+           ├── Preview
+           ├── Detector
+           ├── Recorder
+           └── Diagnostics
+```
+
+This is why a generic tool such as `ffmpeg -i /dev/video1` can silently open the first stream and receive FR rather than DS1.
+
+A second process must not independently open the ISP node while the platform service owns it. Standalone diagnostics may do so only when they have exclusive ownership, for example with the Birdcher/platform camera service stopped.
+
+This requirement is specific to the current Amlogic/Khadas driver behaviour; it is not a general property of V4L2.
 
 ### 3.4 Slow consumers must never block capture
 
@@ -196,6 +219,42 @@ Known working baseline:
 - repeated DS1/FR runs work;
 - no kernel rebuild required.
 
+#### Stream ownership and handle topology
+
+The platform API must present stable stream identities even though the underlying driver assigns streams by open order. Application code must request `FR`, `META`, or `DS1` from the platform rather than opening `/dev/video1` itself.
+
+The platform implementation is responsible for opening the underlying handles in the required order and keeping them alive for as long as the camera session exists.
+
+#### Frame rate is a first-class camera setting
+
+Frame rate must be represented explicitly in the platform camera API and configuration. It must not be left to the IMX415 sensor's current power-on/default behaviour.
+
+Current bring-up evidence shows the sensor can otherwise run at 60 fps, while the IMX415 subdevice `vertical_blanking` control can be used to select a lower effective frame rate. A tested example is a VBLANK setting of 6808 producing approximately 15 fps in the current mode.
+
+The platform should expose a semantic control such as:
+
+```text
+CameraConfig
+    stream = DS1
+    width = 1920
+    height = 1080
+    pixel_format = NV12
+    frame_rate = 15 | 30 | 60 | supported value
+```
+
+The implementation detail may currently map that request to sensor-subdevice VBLANK, but callers must not depend on that mechanism.
+
+The platform must not capture at 60 fps merely to discard most frames later. Camera rate, preview rate, inference sampling rate, and recording rate are separate concepts:
+
+```text
+sensor / capture rate    explicit camera setting
+preview rate             consumer policy
+inference rate           consumer sampling policy
+recording rate           event/recording policy
+```
+
+For Birdcher, the final default capture rate should be chosen from measured image-quality, motion, thermal, CPU, NPU, and recording trade-offs rather than inherited from the sensor. Initial testing should explicitly compare at least 15 fps and 30 fps.
+
 ### 5.2 Camera userspace utility
 
 Provide a small generic CLI, for example:
@@ -251,7 +310,11 @@ The Khadas 5.15 BSP should be treated as the primary reference for how AE/AWB/AF
 
 ### 5.4 Camera temperature investigation
 
-Do not assume the A1019 exposes a readable module/sensor temperature merely because the sensor has thermal specifications.
+This is now a motivated hardware/telemetry task rather than a speculative feature. External thermal-camera observation has already shown that the camera module has meaningful self-heating during operation.
+
+Linux SoC thermal zones are already available and should be exposed independently. The open question is specifically whether the A1019 module, IMX415 sensor, or another device on the camera module exposes a documented die/module temperature that software can read.
+
+Do not assume such a register exists merely because the sensor datasheet specifies operating-temperature ranges, and do not use undocumented register guesses.
 
 Platform task:
 
@@ -259,11 +322,17 @@ Platform task:
 2. inspect Khadas IMX415 vendor driver;
 3. inspect A1019 schematic/BOM if available;
 4. enumerate all devices on the camera I2C bus;
-5. determine whether a documented die/module temperature exists.
+5. determine whether a documented die/module temperature source exists;
+6. if it exists, establish units, accuracy, update rate, valid operating range, and whether reads are safe during streaming.
 
-If available, expose it through a generic telemetry interface.
+The telemetry API should distinguish the sources explicitly:
 
-If not available, still expose SoC thermal zones.
+```text
+soc_temperature_c       required
+camera_temperature_c    optional capability
+```
+
+If no documented camera temperature is available, report that capability as unavailable rather than synthesizing a value from SoC temperature.
 
 ---
 

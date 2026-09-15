@@ -31,7 +31,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | --- | --- |
 | **Image colour** | Green cast. AWB/AE/AF are open loops — see below. Not a DS1 problem: FR shows the same cast. |
 | **Long-run stability** | Measured to ~11 min, not the 30 in the roadmap. No leak: Slab flat to +-0.2 MB, MemAvailable drifts both ways. Longer runs still welcome. |
-| **Streaming / app** | Not started. This is the next phase. |
+| **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
 
@@ -80,7 +80,15 @@ frames discarded, is worth about 15 C:
 
 The CPU saving is modest because MJPEG encoding dominates and that happens at
 15 fps either way. The thermal saving is large because the sensor and ISP stop
-doing 4x the readout and processing. Browser viewing is **not yet verified**.
+doing 4x the readout and processing.
+
+Browser viewing is **verified**: `Content-Type:
+multipart/x-mixed-replace;boundary=ffmpeg`, 116 JPEG frames pulled in 8 s
+(14.5 fps, 5.6 MB) from another machine over WiFi. ffmpeg's `-f mpjpeg`
+defaults to `application/octet-stream`, which a browser downloads instead of
+displaying, so `-content_type` has to be set explicitly.
+`platform/camera/tools/verify-preview.sh <secs>` serves it and writes its
+verdict to `/tmp/preview-verify.txt`.
 
 - **Track A (primary)** — the Birdcher application on the DS1 input:
   capture -> live preview -> recording -> frame distributor -> NPU inference.

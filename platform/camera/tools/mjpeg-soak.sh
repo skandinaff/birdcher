@@ -63,7 +63,7 @@ CLIENT=$!
   | ffmpeg -hide_banner -loglevel warning \
       -f rawvideo -pix_fmt nv12 -s 1920x1080 -r "$FPS" -i - \
       -c:v mjpeg -q:v 7 \
-      -f mpjpeg -listen 1 "http://0.0.0.0:${PORT}" \
+      -f mpjpeg -content_type "multipart/x-mixed-replace;boundary=ffmpeg" -listen 1 "http://0.0.0.0:${PORT}" \
   > "$OUT/ffmpeg.log" 2>&1
 
 rm -f "$OUT/running"
