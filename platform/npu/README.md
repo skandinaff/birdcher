@@ -44,7 +44,8 @@ comparison. The default Teflon library path is
 status are in [docs/tasks/2026-09-16-npu-proof.md](../../docs/tasks/2026-09-16-npu-proof.md).
 
 `tools/tflite-inspect.cc` prints a model's tensor contract. The experimental
-`tools/tflite-detect.cc` runs the COCO SSDLite MobileDet model on a raw
-320×320 RGB24 frame. On this board, CPU inference gives detections, while
+`tools/tflite-detect.cc` runs a quantized COCO SSD model on a raw RGB24 frame
+already resized to the model's input dimensions. On this board, SSDLite
+MobileDet CPU inference gives detections, while
 Teflon currently returns zero detections for the same inputs. Do not use that
 detector's NPU result for an application until the mismatch is understood.

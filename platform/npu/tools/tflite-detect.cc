@@ -1,4 +1,4 @@
-// Run the COCO SSDLite MobileDet model on a 320x320 RGB24 frame.
+// Run a COCO SSD detector on a model-sized square RGB24 frame.
 // g++ -O2 -std=c++17 tflite-detect.cc -ltensorflow-lite -o tflite-detect
 // tflite-detect model.tflite labels.txt frame.rgb [cpu|npu]
 #include <tensorflow/lite/c/c_api.h>
@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
     std::ifstream frame(argv[3], std::ios::binary);
     std::vector<uint8_t> pixels((std::istreambuf_iterator<char>(frame)),
                                 std::istreambuf_iterator<char>());
-    if (pixels.size() != 320 * 320 * 3) {
-        std::cerr << "expected exactly 307200 RGB24 bytes, got " << pixels.size() << '\n';
+    if (pixels.empty()) {
+        std::cerr << "cannot read RGB24 frame\n";
         return 2;
     }
     std::ifstream label_file(argv[2]);
@@ -98,8 +98,8 @@ int main(int argc, char** argv) {
     auto classes = output(interpreter.get(), 1);
     auto scores = output(interpreter.get(), 2);
     auto count = output(interpreter.get(), 3);
-    if (boxes.size() != 400 || classes.size() != 100 ||
-        scores.size() != 100 || count.size() != 1) {
+    if (classes.empty() || boxes.size() != 4 * classes.size() ||
+        scores.size() != classes.size() || count.size() != 1) {
         std::cerr << "unexpected detection output shapes\n";
         return 1;
     }
@@ -107,7 +107,8 @@ int main(int argc, char** argv) {
               << std::chrono::duration<double, std::milli>(end - start).count()
               << " count=" << count[0] << '\n';
     int shown = 0;
-    for (int i = 0; i < std::min(100, static_cast<int>(count[0])); ++i) {
+    for (int i = 0; i < std::min(static_cast<int>(classes.size()),
+                                static_cast<int>(count[0])); ++i) {
         if (scores[i] < 0.25f) continue;
         int cls = static_cast<int>(std::lround(classes[i]));
         std::string label = cls >= 0 && cls < static_cast<int>(labels.size())
