@@ -23,14 +23,18 @@ tar -xzf mobilenet_v1_1.0_224_quant.tgz ./mobilenet_v1_1.0_224_quant.tflite
 The extracted `.tflite` file's SHA-256 is
 `ecc3a67c47c5a609ec35f6a58a7d97532834e43df4cb7d3f1204a8164b7d20dd`.
 The model stays outside Git. `tflite-compare` uses a deterministic synthetic
-224×224×3 UINT8 image so both interpreters receive identical bytes. It warms
-up each interpreter, reports steady-state latency and compares all 1001 output
-bytes. Quantized CPU/NPU rounding is allowed to differ by at most eight levels;
-the top output index must match.
+224×224×3 UINT8 image by default. Pass a raw RGB24 image as the fourth argument
+to check a real camera crop. Both interpreters receive identical bytes. The
+tool warms up each interpreter, reports steady-state latency, lists the top
+classes when given an ImageNet label file, and compares all 1001 output bytes.
+Its smoke test requires the same top class and a maximum byte difference of 16;
+this is a diagnostic threshold, not a formal accuracy guarantee. Output byte
+values are quantized model scores, not calibrated probabilities.
 
 ```sh
 TEFLON_DEBUG=verbose ./tflite-compare mobilenet_v1_1.0_224_quant.tflite 50 compare
 ./tflite-compare mobilenet_v1_1.0_224_quant.tflite 550000 npu
+./tflite-compare mobilenet_v1_1.0_224_quant.tflite 20 compare ball-crop224.rgb imagenet_labels.txt
 ```
 
 Use the verbose option only for a short proof run: it prints the delegated
@@ -38,3 +42,9 @@ operators and hardware job times. A longer `npu` run omits the expensive CPU
 comparison. The default Teflon library path is
 `/usr/lib/teflon/libteflon.so`. The initial board measurements and stress-test
 status are in [docs/tasks/2026-09-16-npu-proof.md](../../docs/tasks/2026-09-16-npu-proof.md).
+
+`tools/tflite-inspect.cc` prints a model's tensor contract. The experimental
+`tools/tflite-detect.cc` runs the COCO SSDLite MobileDet model on a raw
+320×320 RGB24 frame. On this board, CPU inference gives detections, while
+Teflon currently returns zero detections for the same inputs. Do not use that
+detector's NPU result for an application until the mismatch is understood.

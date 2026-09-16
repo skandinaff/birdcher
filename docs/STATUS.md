@@ -36,7 +36,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser; `preview-ctl.sh` manages it via systemd. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
-| NPU proof | M2 started: packaged Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. First comparison: 93.9 ms CPU vs 6.70 ms NPU, matching top index. One-hour stress run in progress; see [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md). |
+| NPU proof | Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. A live camera crop of a tennis ball classified correctly on CPU and NPU (94.2 vs 6.93 ms, 13.6×). The one-hour stress run was stopped early for this demo; the SSDLite detector's NPU path returns zero detections and needs investigation. M2 remains in progress; see [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md). |
 
 ## The 3A finding, which reframes "image quality"
 
@@ -109,7 +109,8 @@ verdict to `/tmp/preview-verify.txt`.
   investigation above; static indoor brightness is now usable.
 
 M2 NPU proof has begun independently of capture. CPU/NPU outputs and latency
-are measured; the stress run and broader model validation remain. The existing
+are measured on synthetic data and a live tennis-ball crop; the interrupted
+stress run and NPU object-detector mismatch remain. The existing
 DS1 checks need not be rerun. Track A is not blocked on Track B. The scaler is
 finished; leave it alone.
 

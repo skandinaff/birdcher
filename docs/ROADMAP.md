@@ -7,7 +7,9 @@
 > unmeasured. Phase 3's browser-preview milestone is working via MJPEG/HTTP;
 > go2rtc/WebRTC and production endurance/latency measurements are deferred.
 > The independent NPU proof (Phase 4 / M2) is in progress: packaged Mesa
-> Teflon runs MobileNet V1 on etnaviv with a 14× measured CPU/NPU speedup.
+> Teflon runs MobileNet V1 on etnaviv with a 14× measured CPU/NPU speedup;
+> a live tennis-ball crop is classified correctly. NPU object detection and
+> uninterrupted endurance testing remain open.
 > See [STATUS.md](STATUS.md) and
 > [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
 
@@ -325,8 +327,10 @@ See [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-in
 
 # Phase 4 — Validate the A311D NPU  🔄 IN PROGRESS
 
-The first CPU/NPU comparison works on the packaged Mesa/TFLite stack; the
-one-hour stability run is in progress. See
+The first CPU/NPU comparison and a live tennis-ball classification work on the
+packaged Mesa/TFLite stack. The one-hour stability run was stopped early for
+the demo, and the tested SSDLite detector returns zero NPU detections despite
+CPU detections on the same image. See
 [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md).
 
 Do this independently from the camera pipeline.
