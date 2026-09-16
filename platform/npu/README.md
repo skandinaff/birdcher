@@ -49,3 +49,29 @@ already resized to the model's input dimensions. On this board, SSDLite
 MobileDet CPU inference gives detections, while
 Teflon currently returns zero detections for the same inputs. Do not use that
 detector's NPU result for an application until the mismatch is understood.
+
+## Live tennis-ball box preview (diagnostic)
+
+The two-stage demo uses SSDLite on CPU for candidate rectangles and MobileNet
+V1 on the NPU to verify ImageNet class 853 (`tennis ball`). It is deliberately
+limited to one ball class and a 640×360, 3 fps browser view. Source and measured
+results are in [the ball-box task](../../docs/tasks/2026-09-16-ball-box-demo.md).
+
+On the board, with the models and `ds1stream` already in
+`~/birdcher-tools/`:
+
+```sh
+g++ -O2 -std=c++17 -Wall -Wextra tools/tflite-ball-stream.cc \
+  -ltensorflow-lite -o ~/birdcher-tools/npu/tflite-ball-stream
+sudo ~/birdcher-tools/npu/ball-preview-ctl.sh start 3
+# Open http://192.168.1.38:8090/ and refresh if it was already open.
+sudo ~/birdcher-tools/npu/ball-preview-ctl.sh stop  # restores ordinary preview
+```
+
+Deploy `tools/serve-ball-mjpeg.sh` and `tools/ball-preview-ctl.sh` to
+`~/birdcher-tools/npu/` as executable files first. The controller switches
+the camera owner between the normal and boxed viewers; do not start both
+pipelines independently. The boxed viewer runs as `mjpeg-ball-preview.service`
+for one hour, one browser client at a time. Model compilation can delay the
+first frame and each reconnect. Check `/tmp/birdcher-ball-{capture,inference,encoder}.log`
+for diagnosis.

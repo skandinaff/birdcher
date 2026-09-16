@@ -333,10 +333,10 @@ the demo, and the tested SSDLite detector returns zero NPU detections despite
 CPU detections on the same image. See
 [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md).
 
-A still-frame box around the ball has been demonstrated by using SSDLite's
-CPU proposal and MobileNet's NPU classification of that proposal. The next
-visible demo is a browser preview with boxes; it requires a single camera
-owner and a sampled detection path. See
+A live 640×360 MJPEG preview now draws a box around the user's tennis ball at
+about 3 fps, using SSDLite's CPU proposal and MobileNet's NPU classification.
+This diagnostic proof owns the camera once; production preview/inference fan-out
+and general bird detection remain future work. See
 [tasks/2026-09-16-ball-box-demo.md](tasks/2026-09-16-ball-box-demo.md).
 
 Do this independently from the camera pipeline.

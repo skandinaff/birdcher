@@ -21,14 +21,33 @@ A two-stage experiment succeeded on the captured frame:
    The diagnostic JPEG is kept outside Git because it contains a private room
    view. The source frame remains on the board in `~/birdcher-tools/npu/`.
 
-This establishes that a CPU proposal plus NPU verification can yield a box on
-a still frame. It does **not** yet establish reliable detection across scenes
-or a live overlaid video stream. The CPU proposal took about 284 ms on this
-frame, so it is too slow for every 30 fps camera frame. A live proof should
-own the DS1 stream once, sample a few frames per second for detection, reuse
-model interpreters, and draw confirmed boxes on the browser preview without
-reopening `/dev/video1`. Measure latency and false detections before using it
-for bird events.
+## Live browser proof
+
+`platform/npu/tools/tflite-ball-stream.cc` now reuses one CPU detector and one
+Teflon classifier across frames. The camera is owned by one `ds1stream`
+process; FFmpeg scales its DS1 frames to 640×360 RGB, the application resizes
+them for each model and draws a red rectangle, and a second FFmpeg serves MJPEG
+on the existing browser URL `http://192.168.1.38:8090/`. The camera's sensor
+rate is set to 3 fps for this proof, not 30 fps with discarded frames.
+
+The program first succeeded on the saved frame: box `(125,93)–(256,215)` in
+640×360, tennis-ball output 163 versus 31 for the next class. Then it ran on
+the live stream and boxed the white ball after it moved. An HTTP client got
+`200 OK`, `multipart/x-mixed-replace` and actual 640×360 JPEG frames with a
+box. After the first client disconnected, the service restarted the capture
+pipeline for a new client. Once the models were warm, the second pipeline's
+first 60 seconds captured 177 frames (2.93 fps), with two sequence gaps and
+no frozen frames, short frames or timeouts. The last measured processing time
+was about 307–314 ms/frame. The application used roughly one CPU core and the
+SoC thermal readings were 57.6/59.4 °C during a spot check.
+
+The live proof still needs broader scene testing. It recognises only ImageNet
+class 853 (`tennis ball`); the COCO CPU model supplies boxes but sometimes
+misnames the ball. The current browser path has one client; reconnecting
+rebuilds the Teflon graph and may pause the picture. Do not treat it as bird
+detection or a production 30 fps stream. A later application should keep one
+camera owner, distribute full-rate preview frames separately from sampled
+inference, and retain the last confirmed box between detection frames.
 
 An alternate Google Coral SSD MobileNet V2 quantized model was also checked.
 It accepts 300×300 RGB input, but CPU inference labeled the soccer-ball
