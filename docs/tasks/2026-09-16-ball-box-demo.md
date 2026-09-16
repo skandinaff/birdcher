@@ -28,7 +28,9 @@ Teflon classifier across frames. The camera is owned by one `ds1stream`
 process; FFmpeg scales its DS1 frames to 640×360 RGB, the application resizes
 them for each model and draws a red rectangle, and a second FFmpeg serves MJPEG
 on the existing browser URL `http://192.168.1.38:8090/`. The camera's sensor
-rate is set to 3 fps for this proof, not 30 fps with discarded frames.
+rate was initially set to 3 fps for the synchronous proof. That made the
+browser view visibly slow because the CPU detector takes about 300–375 ms
+per analysis; MobileNet on the NPU takes about 7–8 ms for each proposed crop.
 
 The program first succeeded on the saved frame: box `(125,93)–(256,215)` in
 640×360, tennis-ball output 163 versus 31 for the next class. Then it ran on
@@ -41,13 +43,32 @@ no frozen frames, short frames or timeouts. The last measured processing time
 was about 307–314 ms/frame. The application used roughly one CPU core and the
 SoC thermal readings were 57.6/59.4 °C during a spot check.
 
+The next iteration separated preview from inference: the sensor and MJPEG
+output are configured for 15 fps; a worker copies the newest RGB frame and
+performs detection without blocking the video writer. The last verified box
+is drawn on later video frames for up to 1.5 s. A 10-second HTTP client pull
+received 175 JPEG frames, including queued frames from startup. An analysis
+still takes roughly 300–350 ms and uses about one CPU core; 15 fps describes
+the video output setting, not the rate of independent detections.
+
+When the ball moved and shrank in the frame, the old `tennis ball` first-place
+requirement hid the box: one isolated crop scored 42/256 for tennis ball while
+another class scored 82/256. The live proof now limits region proposals to
+COCO `apple` or `sports ball` boxes and accepts a tennis-ball softmax score of
+at least 10%. It shows the score next to the box (`BALL 46%` on a verified
+HTTP frame); `BALL?` indicates that tennis ball was not the model's top class.
+The classifier output scale is 1/256 with zero point 0, so the displayed
+percentage is a quantized softmax score, **not a calibrated probability**.
+The lower threshold is useful for this demonstration but increases the chance
+of a false box.
+
 The live proof still needs broader scene testing. It recognises only ImageNet
 class 853 (`tennis ball`); the COCO CPU model supplies boxes but sometimes
 misnames the ball. The current browser path has one client; reconnecting
 rebuilds the Teflon graph and may pause the picture. Do not treat it as bird
-detection or a production 30 fps stream. A later application should keep one
-camera owner, distribute full-rate preview frames separately from sampled
-inference, and retain the last confirmed box between detection frames.
+detection or a production 30 fps stream. A production application still needs
+multi-client fan-out, a longer-lived camera/model process across browser
+reconnects, tracking and measured end-to-end latency.
 
 An alternate Google Coral SSD MobileNet V2 quantized model was also checked.
 It accepts 300×300 RGB input, but CPU inference labeled the soccer-ball

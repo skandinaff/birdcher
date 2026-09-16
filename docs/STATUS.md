@@ -36,7 +36,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser; `preview-ctl.sh` manages it via systemd. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
-| NPU proof | Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. A live camera crop of a tennis ball classified correctly on CPU and NPU (94.2 vs 6.93 ms, 13.6×). A diagnostic 640×360 browser preview now draws a live box at about 3 fps using a CPU proposal verified by the NPU. The one-hour stress run was stopped early; the SSDLite detector's NPU path returns zero detections and needs investigation. M2 remains in progress; see [NPU proof](tasks/2026-09-16-npu-proof.md) and [box demo](tasks/2026-09-16-ball-box-demo.md). |
+| NPU proof | Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. A live camera crop of a tennis ball classified correctly on CPU and NPU (94.2 vs 6.93 ms, 13.6×). A diagnostic 640×360 browser preview is configured for 15 fps; asynchronous CPU proposals and NPU checks update a scored ball box about three times per second. The one-hour stress run was stopped early; the SSDLite detector's NPU path returns zero detections and needs investigation. M2 remains in progress; see [NPU proof](tasks/2026-09-16-npu-proof.md) and [box demo](tasks/2026-09-16-ball-box-demo.md). |
 
 ## The 3A finding, which reframes "image quality"
 

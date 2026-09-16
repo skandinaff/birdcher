@@ -54,16 +54,20 @@ detector's NPU result for an application until the mismatch is understood.
 
 The two-stage demo uses SSDLite on CPU for candidate rectangles and MobileNet
 V1 on the NPU to verify ImageNet class 853 (`tennis ball`). It is deliberately
-limited to one ball class and a 640×360, 3 fps browser view. Source and measured
+limited to one ball class and a 640×360, 15 fps browser view. Inference runs
+asynchronously on the newest frame at roughly 3 analyses/s; the last accepted
+box is drawn on the intervening preview frames. The model's quantized softmax
+score appears next to the box as a percentage. `BALL?` means tennis ball was
+not the model's top class. The score is not a calibrated probability. Source and measured
 results are in [the ball-box task](../../docs/tasks/2026-09-16-ball-box-demo.md).
 
 On the board, with the models and `ds1stream` already in
 `~/birdcher-tools/`:
 
 ```sh
-g++ -O2 -std=c++17 -Wall -Wextra tools/tflite-ball-stream.cc \
+g++ -O2 -std=c++17 -Wall -Wextra -pthread tools/tflite-ball-stream.cc \
   -ltensorflow-lite -o ~/birdcher-tools/npu/tflite-ball-stream
-sudo ~/birdcher-tools/npu/ball-preview-ctl.sh start 3
+sudo ~/birdcher-tools/npu/ball-preview-ctl.sh start 15
 # Open http://192.168.1.38:8090/ and refresh if it was already open.
 sudo ~/birdcher-tools/npu/ball-preview-ctl.sh stop  # restores ordinary preview
 ```

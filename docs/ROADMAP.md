@@ -334,7 +334,10 @@ CPU detections on the same image. See
 [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md).
 
 A live 640×360 MJPEG preview now draws a box around the user's tennis ball at
-about 3 fps, using SSDLite's CPU proposal and MobileNet's NPU classification.
+a configured 15 fps, using SSDLite's CPU proposal and MobileNet's NPU classification
+on sampled frames. The preview and inference are asynchronous, with about
+three CPU region analyses per second. The box shows the model's score as a
+percentage; the score is not a calibrated probability.
 This diagnostic proof owns the camera once; production preview/inference fan-out
 and general bird detection remain future work. See
 [tasks/2026-09-16-ball-box-demo.md](tasks/2026-09-16-ball-box-demo.md).

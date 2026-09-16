@@ -6,7 +6,7 @@ UNIT=mjpeg-ball-preview
 CAMERA_TOOLS=/home/skf/birdcher-tools
 NPU_TOOLS=/home/skf/birdcher-tools/npu
 NORMAL="$CAMERA_TOOLS/preview-ctl.sh"
-FPS="${2:-3}"
+FPS="${2:-15}"
 
 [ "$(id -u)" -eq 0 ] || exec sudo -n "$0" "$@" 2>/dev/null || exec sudo "$0" "$@"
 
