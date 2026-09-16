@@ -6,14 +6,14 @@ UNIT=mjpeg-ball-preview
 CAMERA_TOOLS=/home/skf/birdcher-tools
 NPU_TOOLS=/home/skf/birdcher-tools/npu
 NORMAL="$CAMERA_TOOLS/preview-ctl.sh"
-FPS="${2:-15}"
+FPS="${2:-30}"
 
 [ "$(id -u)" -eq 0 ] || exec sudo -n "$0" "$@" 2>/dev/null || exec sudo "$0" "$@"
 
 case "${1:-status}" in
     start)
-        if [ "$FPS" -lt 1 ] || [ "$FPS" -gt 15 ]; then
-            echo "fps must be 1..15" >&2
+        if [ "$FPS" -lt 1 ] || [ "$FPS" -gt 30 ]; then
+            echo "fps must be 1..30" >&2
             exit 2
         fi
         "$NORMAL" stop

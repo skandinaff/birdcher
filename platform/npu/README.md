@@ -54,7 +54,7 @@ detector's NPU result for an application until the mismatch is understood.
 
 The two-stage demo uses SSDLite on CPU for candidate rectangles and MobileNet
 V1 on the NPU to verify ImageNet class 853 (`tennis ball`). It is deliberately
-limited to one ball class and a 640×360, 15 fps browser view. Inference runs
+limited to one ball class and a 640×360, 30 fps browser view. Inference runs
 asynchronously on the newest frame at roughly 3 analyses/s; the last accepted
 box is drawn on the intervening preview frames. The model's quantized softmax
 score appears next to the box as a percentage. `BALL?` means tennis ball was
@@ -67,7 +67,7 @@ On the board, with the models and `ds1stream` already in
 ```sh
 g++ -O2 -std=c++17 -Wall -Wextra -pthread tools/tflite-ball-stream.cc \
   -ltensorflow-lite -o ~/birdcher-tools/npu/tflite-ball-stream
-sudo ~/birdcher-tools/npu/ball-preview-ctl.sh start 15
+sudo ~/birdcher-tools/npu/ball-preview-ctl.sh start 30
 # Open http://192.168.1.38:8090/ and refresh if it was already open.
 sudo ~/birdcher-tools/npu/ball-preview-ctl.sh stop  # restores ordinary preview
 ```

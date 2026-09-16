@@ -4,7 +4,7 @@
 set -u
 
 SECS="${1:-3600}"
-FPS="${2:-15}"
+FPS="${2:-30}"
 PORT="${3:-8090}"
 CAMERA_TOOLS=/home/skf/birdcher-tools
 NPU_TOOLS=/home/skf/birdcher-tools/npu
