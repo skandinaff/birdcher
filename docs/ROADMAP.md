@@ -1,14 +1,14 @@
 # Khadas VIM3 Bird Camera Project — Implementation Plan
 
-> **Progress, 2026-09-15.** Phase 0 DONE. Phase 1 DONE (and far exceeded: the
-> CSI receiver and ISP had to be ported, not just configured — see
-> [STATUS.md](STATUS.md)). Phase 2 NOT DONE — capture works but the 30-minute
-> stability run has not been made. Phase 3 NOT STARTED, and reshaped by one
-> finding: the A311D **has** H.264/HEVC/JPEG hardware encoders, but **mainline
-> exposes none of them** (vendor drivers exist in `media_modules`), so encoding
-> is software until someone ports them. See
+> **Progress, 2026-09-16.** Phases 0–1 are done. Phase 2's DS1 capture path
+> has been tested at 1920×1080: 642 s at 60 fps and 240 s at 15 fps, with no
+> frozen/short frames or timeouts and no memory growth. This is sufficient for
+> current development; the original 30-minute endurance target remains
+> unmeasured. Phase 3's browser-preview milestone is working via MJPEG/HTTP;
+> go2rtc/WebRTC and production endurance/latency measurements are deferred.
+> The next active milestone is the independent NPU proof (Phase 4 / M2).
+> See [STATUS.md](STATUS.md) and
 > [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
-> Phases 4-10 unchanged.
 
 ## Goal
 
@@ -38,7 +38,7 @@ Hardware:
 - Khadas VIM3
 - Amlogic A311D
 - Built-in A311D NPU
-- MIPI CSI camera
+- IMX415 MIPI CSI camera
 - eMMC storage
 - Ethernet/Wi-Fi as available
 
@@ -48,7 +48,8 @@ OS:
 - Ubuntu-based minimal/headless installation
 - Recent mainline kernel
 
-The exact CSI camera sensor is not yet specified. Detect the sensor and available drivers before changing configuration.
+The camera and ISP are already identified and working; see
+[camera/bringup-status.md](camera/bringup-status.md).
 
 ---
 
@@ -212,24 +213,33 @@ The phase is complete only when:
 
 ---
 
-# Phase 2 — Stable Continuous Video Capture  ⬜ NOT DONE
+# Phase 2 — Stable Continuous Video Capture  ✅ VERIFIED FOR DEVELOPMENT
 
-> Capture works; the 30-minute proof does not exist yet. Longest run 70 s
-> (4195 frames, 59.91 fps, 6 drops, 0 timeouts). `platform/camera/tools/ds1soak.c` does the
-> measuring. Memory growth is the open question.
+The DS1 path has already been exercised at 1920×1080:
 
-Before ML or web streaming, prove that video capture is stable.
+| Run | Result |
+| --- | --- |
+| 642 s, sensor 60 fps, output 15 fps | 38,185 captured, 379 sequence-gap drops, 0 frozen/short frames/timeouts; memory stable; no Oops/WARN while streaming |
+| 240 s, sensor 15 fps, output 15 fps | 3,571 captured, 29 sequence-gap drops, 0 frozen/short frames/timeouts |
+| 30 fps check | 29.81 fps measured, 0 drops in the check |
 
-Run a continuous capture test for at least 30 minutes.
+The 60 fps run deliberately discarded frames for 15 fps output; native 15 fps
+reduced SoC temperature from 65.6 °C to 50.6 °C. See [STATUS.md](STATUS.md)
+and [tasks/2026-09-15-streaming-handover.md](tasks/2026-09-15-streaming-handover.md).
+Capture stability has been checked and does not block NPU or application work.
+The original ≥30-minute duration was **not** reached by the recorded runs;
+reserve that endurance check for production qualification, without repeating
+the existing DS1 bring-up work now.
 
-Preferred initial target:
+For a later endurance test, use `platform/camera/tools/ds1soak.c` with thermal,
+memory and kernel monitoring. The target remains:
 
 ```text
 1920x1080
 15–30 FPS
 ```
 
-If the CSI pipeline cannot sustain this, use the best stable mode reported by V4L2.
+Use the measured 30 fps or native 15 fps sensor setting as appropriate.
 
 Monitor:
 
@@ -258,83 +268,57 @@ Look specifically for:
 - V4L2 timeouts
 - thermal throttling
 
-Document the stable capture pipeline.
+Record any new result beside the existing measurements rather than replacing
+their provenance.
 
 ---
 
-# Phase 3 — Browser Live Stream  ⬜ NOT STARTED
+# Phase 3 — Browser Live Stream  ✅ MJPEG PREVIEW WORKS
 
-> **Reshaped:** the "investigate hardware encoding" question below is answered.
-> The silicon has `amvenc_avc`, `cnm HevcEnc` and `jpegenc`; mainline exposes
-> none of them. Encoding is software until someone ports the vendor drivers,
-> and that software cost competes with the NPU budget. See the streaming task.
+The implemented path is `DS1 → ds1stream → ffmpeg MJPEG → HTTP → browser` at
+`http://192.168.1.38:8090/`. It works headlessly and is managed by the
+transient `mjpeg-preview` systemd unit through `preview-ctl.sh`. A client
+disconnect can reconnect. The stream serves one client at a time.
 
-Goal:
+The A311D has H.264/HEVC/JPEG encoder hardware, but this mainline kernel
+exposes no encoder. MJPEG software encoding is the measured first-light
+choice: 4.7–5.9 Mbit/s at 1080p15. A production stream with fan-out, longer
+endurance and latency/CPU budgets remains future work; it does not gate M2.
+
+Current path:
 
 ```text
-CSI camera
-    ↓
-V4L2 / media pipeline
-    ↓
-go2rtc
-    ↓
-WebRTC / MSE
-    ↓
-browser
+IMX415 → CSI/ISP → DS1 NV12 → ffmpeg MJPEG → HTTP → browser
 ```
 
-Use **go2rtc** for the first streaming implementation.
+If MJPEG's bandwidth or single-viewer limit becomes a measured problem,
+evaluate software H.264 plus go2rtc/WebRTC. Avoid porting the vendor encoder
+until the software path is measured as insufficient.
 
-Do not build a custom frontend yet.
+Do not build a custom frontend solely for this diagnostic viewer.
 
 ## Requirements
 
 The user must be able to open a URL from another computer/phone on the LAN and see the live camera.
 
-Prefer:
-
-- WebRTC for low latency
-- MSE as fallback
-
-Avoid unnecessary transcoding.
-
-If the CSI output format is not directly acceptable to go2rtc, use FFmpeg or GStreamer as an input/transcoding bridge.
-
-Measure:
-
-- CPU load
-- RAM use
-- stream latency
-- dropped frames
-- network bitrate
+The existing viewer meets this requirement. WebRTC/MSE remains an option when
+the product needs multiple viewers or a lower-bandwidth transport. Measure
+latency, CPU, RAM, drops and bitrate for that final choice before replacing the
+working MJPEG path.
 
 ## Hardware encoding
 
-Investigate whether the current mainline Armbian kernel exposes usable A311D hardware H.264/H.265 encoding.
+Already investigated: `/dev/video0` is a decoder, and the mainline kernel
+exposes no A311D hardware encoder. Vendor drivers exist but are not ported.
+See [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
 
-Do not assume Khadas vendor VPU APIs work on mainline Armbian.
+## Phase 3 production follow-up criteria
 
-Check available FFmpeg encoders:
-
-```bash
-ffmpeg -hide_banner -encoders | grep -Ei '264|265|v4l2|vaapi|meson'
-```
-
-Also inspect V4L2 codec devices:
-
-```bash
-v4l2-ctl --list-devices
-```
-
-If no reliable hardware encoder exists, initially use software encoding at a conservative resolution/frame rate.
-
-## Phase 3 acceptance criteria
-
-- live video works in a normal browser
-- no desktop environment is required
-- stream survives at least 30 minutes
-- latency and CPU use are documented
-- service can later be started through systemd
+- live video works in a normal browser — **done**
+- no desktop environment is required — **done**
+- service can be started through systemd — **done**
+- 30-minute production-stream endurance — pending
+- latency and CPU budget for the final transport — pending
 
 ---
 

@@ -1,6 +1,6 @@
 # Status
 
-Updated 2026-09-15.
+Updated 2026-09-16.
 
 ## What works
 
@@ -32,8 +32,8 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | Item | State |
 | --- | --- |
 | **Image colour** | Indoor brightness is usable after the measured fixed exposure/gain and gamma change. A green cast remains because AWB/CCM are still neutral — see below. Not a DS1 problem: FR shows the same cast. |
-| **Long-run stability** | Measured to ~11 min, not the 30 in the roadmap. No leak: Slab flat to +-0.2 MB, MemAvailable drifts both ways. Longer runs still welcome. |
-| **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser. Application layer not started. |
+| **Production endurance** | DS1 stability has been checked for development: 642 s at 60 fps and 240 s at 15 fps, with no frozen/short frames or timeouts and no memory growth. The original 30-minute qualification target is still unmeasured but does not block M2. |
+| **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser; `preview-ctl.sh` manages it via systemd. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
 
@@ -107,7 +107,10 @@ verdict to `/tmp/preview-verify.txt`.
 - **Track B (secondary)** — colour and adaptive camera quality via the 3A
   investigation above; static indoor brightness is now usable.
 
-Track A is not blocked on Track B. The scaler is finished; leave it alone.
+The next active milestone is M2: prove CPU and Teflon/etnaviv NPU inference on
+a known-supported quantized model, then compare outputs and latency. The
+existing DS1 checks need not be rerun before that work. Track A is not blocked
+on Track B. The scaler is finished; leave it alone.
 
 ## History
 

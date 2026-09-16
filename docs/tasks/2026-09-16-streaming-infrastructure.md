@@ -1,10 +1,13 @@
-# Task: video streaming infrastructure (Roadmap phases 2-3)
+# Video streaming infrastructure: survey and implemented preview
 
-Status: **not started.** This page holds the survey done on 2026-09-15 so the
-work can begin from facts rather than assumptions.
+Updated 2026-09-16. DS1 stability checks and the MJPEG browser preview have
+been completed since the original 2026-09-15 survey. This page records what
+was measured and what remains a production follow-up; the next active
+milestone is M2 NPU proof.
 
 Input is settled and stable: `/dev/video1`, third open (stream 2), DS1,
-1920x1080 NV12, 60 fps. See [../STATUS.md](../STATUS.md).
+1920x1080 NV12. The sensor defaults to 60 fps; preview startup selects 30 fps.
+See [../STATUS.md](../STATUS.md).
 
 ## The finding that shapes this phase: the encoders exist, mainline hides them
 
@@ -62,47 +65,56 @@ loading and measuring before writing any CPU-side NV12 conversion.
 | RAM | 3.7 GiB total, 3.4 GiB available |
 | Disk | 29 GB root, 21 GB free |
 | Thermal at idle | 39-41 C, no throttling |
-| Installed | **none of** ffmpeg, go2rtc, gstreamer. `ffmpeg` apt candidate is `7:8.0.1-3ubuntu2` |
+| Encoder in use | `ffmpeg` software MJPEG; go2rtc is not part of the current preview |
 
-## Phase 2 — prove capture is stable (do this first)
+## Phase 2 — DS1 stability checked
 
-Roadmap phase 2 asks for >= 30 minutes of continuous capture with drops,
-thermals and kernel errors watched. **This has not been done** — the longest
-run so far is 70 s.
+The original survey preceded the completed tests. Results preserved on the
+board under `~/birdcher-tools/soak-run/` and
+`~/birdcher-tools/soak-15fps-clean/`:
 
-`tools/ds1soak.c` already does the measuring: frame count, sustained fps,
-sequence-gap drops, frozen-frame detection and short frames.
+| Test | Capture result |
+| --- | --- |
+| 60 fps sensor, 15 fps MJPEG output, 642 s | 38,185 frames, 59.44 fps, 379 sequence-gap drops, 0 frozen/short frames/timeouts |
+| 15 fps native sensor and output, 240 s | 3,571 frames, 14.88 fps, 29 drops, 0 frozen/short frames/timeouts |
+| 30 fps sensor check | 29.81 fps, 0 drops |
 
-```sh
-./ds1soak 2700 1920 1080          # 45 min
-watch -n1 'cat /sys/class/thermal/thermal_zone*/temp'
-dmesg -w
+The 642-second run showed no memory leak (Slab within ±0.2 MB) or kernel
+Oops/WARN while streaming. Running the sensor at native 15 fps instead of 60
+fps lowered the hottest SoC reading from 65.6 °C to 50.6 °C. These checks
+establish a working capture path for further development. The original ≥30
+minute endurance target has not been demonstrated; keep it as a production
+qualification task, not as a reason to repeat DS1 bring-up before M2.
+
+`platform/camera/tools/ds1soak.c` remains available for a later dedicated
+capture endurance run; `soak-monitor.sh` samples CPU, memory and thermals.
+
+## Phase 3 — browser preview working
+
+The implemented path is:
+
+```text
+IMX415 → CSI/ISP → DS1 NV12 → ds1stream → ffmpeg MJPEG → HTTP → browser
 ```
 
-Record: drops, fps stability, thermal curve, and **memory growth** (the open
-question — sample `/proc/meminfo` MemAvailable/Slab periodically).
+`preview-ctl.sh start` applies the 30 fps sensor rate and measured indoor
+exposure/gain profile, then starts a transient systemd unit. A LAN browser can
+open `http://192.168.1.38:8090/`; HTTP returns multipart MJPEG with the
+correct content type. A disconnect can reconnect. The server supports one
+viewer at a time. 1080p15 MJPEG measured 4.7–5.9 Mbit/s. See
+[2026-09-15-streaming-handover.md](2026-09-15-streaming-handover.md).
 
-Do not build streaming on top of an unproven capture path.
+The original go2rtc/WebRTC design has not been implemented. It is a possible
+upgrade when fan-out, bandwidth or latency requirements justify it. A
+30-minute production-stream soak and a measured end-to-end latency/CPU budget
+remain open, but neither blocks the independent M2 NPU proof.
 
-## Phase 3 — browser live stream
-
-Target from the roadmap:
-
-```
-CSI -> V4L2 -> go2rtc -> WebRTC/MSE -> browser
-```
-
-Acceptance: live video in a normal browser on the LAN, no desktop environment,
-survives 30 minutes, latency and CPU documented, systemd-able later.
-
-### The decision to make before installing anything
+### Transport choices for later product work
 
 With software encoding (see above) the three shapes are:
 
-1. **MJPEG over HTTP.** Simplest path; no H.264 at all. Every browser renders
-   it from an `<img>`. Costs bandwidth (roughly 5-10 Mbit/s at 1080p15) and
-   has no inter-frame compression, but the encode is cheap and the moving
-   parts are few. Good first light.
+1. **MJPEG over HTTP.** Implemented first light. Every browser renders it from
+   an `<img>`; it costs measured bandwidth and currently serves one viewer.
 2. **Software H.264 (x264 `ultrafast` + `zerolatency`) into go2rtc, WebRTC
    out.** What the roadmap prefers and the right long-term shape. Costs real
    CPU at 1080p; that is the budget NPU inference will also want.
@@ -113,25 +125,21 @@ With software encoding (see above) the three shapes are:
 A fourth exists but is a project, not a step: **port `amvenc_avc` from the
 vendor BSP.** Keep it in reserve for when measurements justify it.
 
-Note the sensor delivers 60 fps; the roadmap's own target is 15-30. Halving
-the frame rate is the cheapest single lever available and should be pulled
-before optimising anything else.
+The sensor now runs at the requested rate through `vertical_blanking`; 60 fps
+is only its reset default. This control must be reapplied by each camera owner.
 
-### Steps once the shape is chosen
+### If a different transport becomes necessary
 
-1. `apt install ffmpeg` (and go2rtc, which is a single binary, not a package).
-2. Prove one encoded file first: capture N seconds from DS1 to H.264/MJPEG on
-   disk and play it back. No network yet.
-3. Measure CPU and thermals at the chosen resolution/fps. Decide the budget
-   before adding WebRTC.
-4. Put go2rtc in front, confirm a browser on the LAN plays it.
-5. Only then: 30-minute soak, latency measurement, systemd unit.
+1. Measure the actual limitation of the MJPEG preview under the intended load.
+2. Prove an encoded file and measure software H.264 CPU/thermal cost at the
+   chosen resolution and native sensor rate.
+3. Add go2rtc/WebRTC only if the measured trade-off is worthwhile; then check
+   browser playback, reconnection, latency and a 30-minute production soak.
 
 ## Open questions
 
-- Memory growth over a long capture (phase 2 answers this).
+- Production endurance beyond the measured 642 s and final-stream latency.
 - Does GE2D actually help, or is `ge2d.ko` as unexercised as the rest of the
   vendor media stack on this kernel?
-- Does the V4L2 stream survive a client disconnect/reconnect cycle, given the
-  stream object is destroyed on close and stream ids are assigned by open
-  order? This is a real constraint on any daemon that reopens the device.
+- How should a future multi-viewer service own and distribute one V4L2 stream?
+  The current preview restarts its single-client encoder after disconnect.

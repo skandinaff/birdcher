@@ -1132,7 +1132,7 @@ The reusable VIM3 platform may live in the same monorepo initially, but its sour
 IMX415 → CSI → ISP → FR/DS1 → V4L2
 ```
 
-Status: largely complete.
+Status: complete. DS1 1920×1080 NV12 works across cold boot and restart.
 
 ### M1 — Live observability
 
@@ -1140,11 +1140,14 @@ Status: largely complete.
 DS1 → MJPEG → browser
 ```
 
-Add basic telemetry.
-
-Use the first long-running preview as a DS1 soak/stability test.
+Status: complete for development. MJPEG preview works in a LAN browser,
+`preview-ctl.sh` manages its systemd unit, and camera controls are enumerated.
+The completed DS1 runs reached 642 s at 60 fps and 240 s at native 15 fps;
+the longer production-endurance target is tracked separately in the roadmap.
 
 ### M2 — Platform NPU proof
+
+Status: next active milestone; not started.
 
 Run a known-supported quantized model through:
 

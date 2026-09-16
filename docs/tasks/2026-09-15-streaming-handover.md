@@ -68,7 +68,8 @@ the repo and scp.
   later measurement-driven transport decision.
 - **Module reload leaks sysfs attrs** (`adapt_frame`/`inject_frame`/`dol_frame`),
   so a reload throws three duplicate-filename WARNs. Cold boot is clean.
-- **Long-run stability** measured to ~11 min, not the roadmap's 30.
+- **Production endurance** measured to ~11 min; the original 30-minute
+  qualification target remains, but is not a gate for M2.
 - **A1019 module temperature** — unknown whether one is readable (architecture
   §5.4); motivated by a 50 C thermal-camera reading on the module.
 
