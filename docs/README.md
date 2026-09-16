@@ -5,6 +5,8 @@ Headless bird-observation camera on a Khadas VIM3 (Amlogic A311D), Armbian
 
 **Start here:** [STATUS.md](STATUS.md) — what works today, in one page.
 Then [ROADMAP.md](ROADMAP.md) for the phase plan.
+For architectural review of the current proof, see
+[ARCHITECTURE_REVIEW_2026-09-16.md](ARCHITECTURE_REVIEW_2026-09-16.md).
 
 ## Layout
 
