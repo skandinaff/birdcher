@@ -6,7 +6,8 @@
 > current development; the original 30-minute endurance target remains
 > unmeasured. Phase 3's browser-preview milestone is working via MJPEG/HTTP;
 > go2rtc/WebRTC and production endurance/latency measurements are deferred.
-> The next active milestone is the independent NPU proof (Phase 4 / M2).
+> The independent NPU proof (Phase 4 / M2) is in progress: packaged Mesa
+> Teflon runs MobileNet V1 on etnaviv with a 14× measured CPU/NPU speedup.
 > See [STATUS.md](STATUS.md) and
 > [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-infrastructure.md).
 
@@ -322,7 +323,11 @@ See [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-in
 
 ---
 
-# Phase 4 — Validate the A311D NPU  ⬜ NOT STARTED
+# Phase 4 — Validate the A311D NPU  🔄 IN PROGRESS
+
+The first CPU/NPU comparison works on the packaged Mesa/TFLite stack; the
+one-hour stability run is in progress. See
+[tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md).
 
 Do this independently from the camera pipeline.
 

@@ -1147,7 +1147,8 @@ the longer production-endurance target is tracked separately in the roadmap.
 
 ### M2 — Platform NPU proof
 
-Status: next active milestone; not started.
+Status: in progress. Packaged Mesa Teflon runs MobileNet V1 on the NPU;
+CPU/NPU comparison is measured and the endurance run is pending.
 
 Run a known-supported quantized model through:
 

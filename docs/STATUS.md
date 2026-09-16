@@ -36,6 +36,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser; `preview-ctl.sh` manages it via systemd. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
+| NPU proof | M2 started: packaged Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. First comparison: 93.9 ms CPU vs 6.70 ms NPU, matching top index. One-hour stress run in progress; see [tasks/2026-09-16-npu-proof.md](tasks/2026-09-16-npu-proof.md). |
 
 ## The 3A finding, which reframes "image quality"
 
@@ -107,10 +108,10 @@ verdict to `/tmp/preview-verify.txt`.
 - **Track B (secondary)** — colour and adaptive camera quality via the 3A
   investigation above; static indoor brightness is now usable.
 
-The next active milestone is M2: prove CPU and Teflon/etnaviv NPU inference on
-a known-supported quantized model, then compare outputs and latency. The
-existing DS1 checks need not be rerun before that work. Track A is not blocked
-on Track B. The scaler is finished; leave it alone.
+M2 NPU proof has begun independently of capture. CPU/NPU outputs and latency
+are measured; the stress run and broader model validation remain. The existing
+DS1 checks need not be rerun. Track A is not blocked on Track B. The scaler is
+finished; leave it alone.
 
 ## History
 

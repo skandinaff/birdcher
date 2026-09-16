@@ -7,8 +7,9 @@ stay useful with Birdcher removed entirely — see
 ```
 platform/
 ├── camera/tools/   capture, streaming and soak tools for the IMX415/ISP stack
+├── npu/tools/      CPU/Teflon comparison and NPU stress proof
 ├── scripts/        host/build tooling
-└── (audio/, npu/, common/ to follow — created when they have content)
+└── (audio/, common/ to follow — created when they have content)
 ```
 
 The camera **kernel** stack is the `external/radxa-zero2pro-camera` submodule

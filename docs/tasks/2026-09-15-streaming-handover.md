@@ -10,7 +10,7 @@ tuning completed after the original streaming handover.
 | --- | --- |
 | M0 camera transport | **done** — DS1 1920x1080 NV12, cold boot, repeatable |
 | M1 live observability | **done** — DS1 -> MJPEG -> HTTP, viewable in a browser, soak-measured |
-| M2 NPU proof | **not started** — next: MobileNet V2 / SSDLite MobileDet UINT8 via Teflon/etnaviv, with the CPU-vs-NPU comparison |
+| M2 NPU proof | **in progress** — MobileNet V1 UINT8 works via packaged Teflon/etnaviv; stress and broader model validation remain. See [2026-09-16-npu-proof.md](2026-09-16-npu-proof.md) |
 
 ## Running it
 
