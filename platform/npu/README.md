@@ -46,9 +46,25 @@ status are in [docs/tasks/2026-09-16-npu-proof.md](../../docs/tasks/2026-09-16-n
 `tools/tflite-inspect.cc` prints a model's tensor contract. The experimental
 `tools/tflite-detect.cc` runs a quantized COCO SSD model on a raw RGB24 frame
 already resized to the model's input dimensions. On this board, SSDLite
-MobileDet CPU inference gives detections, while
-Teflon currently returns zero detections for the same inputs. Do not use that
-detector's NPU result for an application until the mismatch is understood.
+MobileDet CPU inference gives detections while Teflon returns none.
+
+That mismatch is now diagnosed and is a Mesa defect, not ours: distinct tensors
+share one buffer in etnaviv's ML memory planner, which empties every output of a
+fan-out SSD head. Do not expect any SSD-family detector to work through this
+delegate. `tools/tflite-tensor-probe.cc` is the tool that established it -- it
+reads any tensor in the primary subgraph, can poison buffers before `Invoke` to
+tell "computed zeros" from "never written", and can declare extra outputs with
+`EXTRA_OUTPUTS`. Full trail in
+[docs/tasks/2026-09-25-teflon-detector-investigation.md](../../docs/tasks/2026-09-25-teflon-detector-investigation.md).
+
+```sh
+g++ -O2 -std=c++17 tools/tflite-tensor-probe.cc -ltensorflow-lite -o tflite-tensor-probe
+./tflite-tensor-probe model.tflite frame.rgb npu+poison 198 203 326
+```
+
+Model compilation is slow: 16.5 s for MobileNet V1, 25.9 s for MobileNet V2 and
+61.1 s for SSDLite MobileDet, against 8-43 ms of inference. Compile once in a
+long-lived process.
 
 ## Live tennis-ball box preview (diagnostic)
 
