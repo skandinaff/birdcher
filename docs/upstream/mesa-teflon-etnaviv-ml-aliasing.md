@@ -1,5 +1,14 @@
 # Upstream bug report draft: Teflon/etnaviv returns all-zero outputs for a fan-out (SSD) graph
 
+> **DO NOT FILE AS WRITTEN.** Later the same evening,
+> `ETNA_MESA_DEBUG=ml_msgs` showed the detector's twelve outputs are each
+> aliased onto a *distinct* NN-job output buffer at offset 0 with the correct
+> size, so the "they collide onto one buffer" explanation below is wrong. The
+> measurements in this report stand; the **Likely cause** section does not.
+> See the correction in
+> [../tasks/2026-09-25-teflon-detector-investigation.md](../tasks/2026-09-25-teflon-detector-investigation.md)
+> before touching this file again.
+
 **Status: drafted 2026-09-25, not filed.** Intended destination is
 <https://gitlab.freedesktop.org/mesa/mesa/-/issues> with labels `etnaviv` and
 `teflon`. Everything below the horizontal rule is written to be pasted as the

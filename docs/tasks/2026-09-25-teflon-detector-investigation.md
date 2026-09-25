@@ -133,6 +133,50 @@ This explains the uniformity of the failure -- not one wrong branch but all
 twelve identically empty -- and why swapping detectors did not help. The Coral
 SSD MobileNet V2 detector tried on 2026-09-16 has the same multi-head shape.
 
+## Correction, same evening: the aliasing story does not fit the detector
+
+`ETNA_MESA_DEBUG=ml_msgs` works on the packaged library -- no rebuild needed --
+and it logs every `reference_tensor_with_offset()` call. Running the detector
+under it contradicts the paragraph above.
+
+28 aliasing events fire: 15 with a non-zero offset (one per residual `ADD`) and
+13 at offset 0 (one per `RESHAPE`, lowered to `ETNA_JOB_TYPE_BYPASS`). The
+twelve detection-head outputs are the offset-0 kind, and each one is set up
+**correctly**:
+
+```
+ 59 NN   195 197 in2:   0          src_tensor 197 (fa4db000) dst_tensor 198 offset 0 size 4800
+ 60 BYPASS 197 198                 src_tensor 202 (fa4b5000) dst_tensor 203 offset 0 size 109200
+ 61 NN   193 200 in2:   0          ... ten more, all offset 0, all with the right size
+```
+
+A real NN instruction writes tensor 197; tensor 198 aliases it at offset 0 with
+its exact size, 4800 bytes. All twelve source addresses are **distinct**
+(`fa4db000`, `fa4b5000`, `ff605000`, ...). So the twelve outputs do not collide
+onto one buffer, and the sizes and offsets handed to them are right.
+
+What remains true, and what does not:
+
+- **True:** the detector's twelve outputs read back as zeros while the CPU
+  reference gives detections. Directly measured.
+- **True:** MobileNet V1 and V2 are correct through the same delegate.
+- **True:** three pairs of distinct MobileNet V2 tensors come back
+  byte-identical under `SetOutputs()`. That is real, and it involves the `ADD`
+  path, but it is now a **separate** observation rather than the explanation.
+- **Not established:** that the aliasing empties the detector's outputs. The
+  log shows the detector's output aliasing is set up correctly.
+
+The poison result also needs re-reading. `etna_ml_subgraph_read_outputs()` ends
+in `pipe_buffer_read(res, 0, size, outputs[i])`, so `0xAA` turning into zeros
+proves only that the **copy happened** -- the GPU-side buffer contained zeros.
+It does not prove any NN job wrote them. "We are reading a buffer that was
+allocated, hence zeroed, and never written" is still open, and is now the
+likelier shape of the fault.
+
+The graph is also a genuine DAG: tensor 193 feeds three branches, and 15 of the
+120 ops are `ADD`. Whichever of those the fault involves, settling it means
+instrumenting the driver, not reading it. A local Mesa build is the next step.
+
 ## Two side findings worth keeping
 
 **Graph compilation is slow enough to shape the architecture.** Measured on

@@ -146,7 +146,12 @@ int main(int argc, char** argv) {
 
     TfLiteDelegate* delegate = nullptr;
     if (mode == "npu") {
-        auto opts = TfLiteExternalDelegateOptionsDefault("/usr/lib/teflon/libteflon.so");
+        // TEFLON_LIB points at a locally built delegate, so a patched Mesa can
+        // be A/B tested against the packaged one without installing anything.
+        const char* lib = getenv("TEFLON_LIB");
+        if (!lib) lib = "/usr/lib/teflon/libteflon.so";
+        printf("delegate: %s\n", lib);
+        auto opts = TfLiteExternalDelegateOptionsDefault(lib);
         delegate = TfLiteExternalDelegateCreate(&opts);
         if (!delegate) { fprintf(stderr, "Teflon delegate could not be loaded\n"); return 1; }
         if (interp->ModifyGraphWithDelegate(delegate) != kTfLiteOk) {
