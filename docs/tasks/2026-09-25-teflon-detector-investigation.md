@@ -153,7 +153,10 @@ Object detection on the NPU is blocked on Mesa, not on us. Three ways forward,
 not mutually exclusive:
 
 1. **Report it upstream** with this minimal reproducer. The characterisation is
-   precise and the repro is two stock models plus one tool.
+   precise and the repro is two stock models plus one tool. A ready-to-paste
+   issue body is drafted in
+   [../upstream/mesa-teflon-etnaviv-ml-aliasing.md](../upstream/mesa-teflon-etnaviv-ml-aliasing.md);
+   it is **not filed**.
 2. **Keep the NPU for single-output work** and get candidate regions another
    way. This is what the current two-stage ball demo does, and it is measured:
    NPU classification 7-8 ms against 94 ms on CPU. For "is a bird present" this

@@ -18,6 +18,7 @@ For architectural review of the current proof, see
 | `kernel/` | which kernel, which headers, why no rebuild | build or module-loading trouble |
 | `hardware/` | board, sensor and connector facts; datasheets | wiring, DT, or "what is this pin" |
 | `tasks/` | one file per worked task, kept as evidence | picking up unfinished work |
+| `upstream/` | bug reports drafted against other projects, filed or not | a defect turns out not to be ours |
 | `archive/` | superseded process logs and finished task prompts | historical curiosity only |
 | `logs/`, `images/` | raw captures referenced by tasks | checking someone's evidence |
 
