@@ -211,3 +211,28 @@ not mutually exclusive:
    rather than a task.
 
 Nothing here changes the camera path. The scaler and DS1 capture are untouched.
+
+## Where this stopped, 2026-09-25 late
+
+Nothing is running; the board can be powered off. State:
+
+- The raw driver log this correction rests on is kept at
+  [../logs/2026-09-25-etnaviv-ml-msgs-detector.log](../logs/2026-09-25-etnaviv-ml-msgs-detector.log),
+  since it lived in `/tmp` on the board.
+- An arm64 build environment for Mesa 26.0.8 exists and the image builds:
+  `platform/npu/mesa-build/`. `meson setup` and `ninja` have not run.
+- `tflite-tensor-probe` takes `TEFLON_LIB`, so a local build can be A/B tested
+  without installing anything on the board.
+
+Next, in this order:
+
+1. `ninja` the unpatched target and run it on the board as a **control**. It must
+   reproduce the all-zero outputs. If it does not, the bench is invalid and
+   nothing built on it counts.
+2. Instrument `etna_ml_compile_operation_nn()` to print the GPU address each
+   compiled instruction writes, and compare against the addresses
+   `etna_ml_subgraph_read_outputs()` reads. That answers the open question --
+   whether the twelve buffers are simply never written -- by measurement.
+3. Only then write a patch, as a test of something found rather than of a guess.
+
+Two hypotheses have already died this way. Instrument before theorising.
