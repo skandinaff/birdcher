@@ -325,7 +325,7 @@ See [tasks/2026-09-16-streaming-infrastructure.md](tasks/2026-09-16-streaming-in
 
 ---
 
-# Phase 4 — Validate the A311D NPU  🔄 IN PROGRESS
+# Phase 4 — Validate the A311D NPU  ✅ DONE (endurance criterion waived)
 
 The first CPU/NPU comparison and a live tennis-ball classification work on the
 packaged Mesa/TFLite stack. The one-hour stability run was stopped early for
@@ -426,10 +426,23 @@ Do not integrate an unstable NPU path into the camera service.
 
 ## Phase 4 acceptance criteria
 
-- inference is demonstrably running through Teflon/etnaviv
-- latency is measured
-- one-hour stress test is stable
-- exact setup is documented
+- inference is demonstrably running through Teflon/etnaviv — **met**: 27 and 62
+  operations compiled into NPU graphs, hardware job timings reported, outputs
+  match the CPU reference
+- latency is measured — **met**: 6.7–8.25 ms on the NPU against 94 ms on CPU,
+  a 13.6–14.0x speedup
+- one-hour stress test is stable — **waived by the project owner on 2026-09-26**
+  in favour of the ~15 minutes actually run. The judgement was that a longer run
+  was unlikely to reveal anything new and the time is better spent on the
+  unstarted phases. Recorded as a deliberate deviation, not an oversight; if NPU
+  instability ever shows up in the field, this is the check that was skipped.
+- exact setup is documented — **met**: see tasks/2026-09-16-npu-proof.md
+
+Note on what this phase does *not* establish: object **detection** on the NPU
+does not work, because of a defect in Mesa's Teflon/etnaviv path. The project
+goal lists NPU detection as *preferable*, not required, and phase 5 asks for a
+bird/no-bird decision at 3–10 fps, which NPU classification already delivers.
+See upstream/mesa-teflon-etnaviv-detector-zero-outputs.md.
 
 ---
 

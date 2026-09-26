@@ -199,7 +199,7 @@ not mutually exclusive:
 1. **Report it upstream** with this minimal reproducer. The characterisation is
    precise and the repro is two stock models plus one tool. A ready-to-paste
    issue body is drafted in
-   [../upstream/mesa-teflon-etnaviv-ml-aliasing.md](../upstream/mesa-teflon-etnaviv-ml-aliasing.md);
+   [../upstream/mesa-teflon-etnaviv-detector-zero-outputs.md](../upstream/mesa-teflon-etnaviv-detector-zero-outputs.md);
    it is **not filed**.
 2. **Keep the NPU for single-output work** and get candidate regions another
    way. This is what the current two-stage ball demo does, and it is measured:
