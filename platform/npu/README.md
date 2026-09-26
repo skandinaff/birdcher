@@ -48,14 +48,14 @@ status are in [docs/tasks/2026-09-16-npu-proof.md](../../docs/tasks/2026-09-16-n
 already resized to the model's input dimensions. On this board, SSDLite
 MobileDet CPU inference gives detections while Teflon returns none.
 
-That mismatch is now diagnosed and is a Mesa defect, not ours: distinct tensors
-share one buffer in etnaviv's ML memory planner, which empties every output of a
-fan-out SSD head. Do not expect any SSD-family detector to work through this
-delegate. `tools/tflite-tensor-probe.cc` is the tool that established it -- it
-reads any tensor in the primary subgraph, can poison buffers before `Invoke` to
-tell "computed zeros" from "never written", and can declare extra outputs with
-`EXTRA_OUTPUTS`. Full trail in
-[docs/tasks/2026-09-25-teflon-detector-investigation.md](../../docs/tasks/2026-09-25-teflon-detector-investigation.md).
+The packaged Mesa's mismatch was investigated with
+`tools/tflite-tensor-probe.cc`, which reads tensors in the primary subgraph,
+can poison buffers before `Invoke` and can declare extra outputs with
+`EXTRA_OUTPUTS`. Later work found two candidate Mesa patches that restore
+CPU-matching top detections on three saved images; they have not established
+bird-detection quality. See the
+[latest results](../../docs/tasks/2026-09-26-teflon-two-fixes.md) and the
+[initial investigation](../../docs/tasks/2026-09-25-teflon-detector-investigation.md).
 
 ```sh
 g++ -O2 -std=c++17 tools/tflite-tensor-probe.cc -ltensorflow-lite -o tflite-tensor-probe

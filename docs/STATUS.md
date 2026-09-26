@@ -1,6 +1,6 @@
 # Status
 
-Updated 2026-09-25.
+Updated 2026-09-26.
 
 ## What works
 
@@ -36,7 +36,7 @@ correct NV12 size/stride, no Oops or WARN while streaming.
 | **Streaming / app** | M1 done: DS1 -> MJPEG -> HTTP viewable in a browser; `preview-ctl.sh` manages it via systemd. Application layer not started. |
 | **Hardware encode** | Silicon has `amvenc_avc` (H.264) + `cnm HevcEnc` (H.265) + JPEG; **mainline exposes none of them**, vendor drivers exist in `media_modules`. Software encode for now. |
 | Module reload | Leaks three sysfs attrs (`adapt_frame`, `inject_frame`, `dol_frame`); reload throws duplicate-filename WARNs. Cold boot clean. Cosmetic. |
-| NPU proof | Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. A live camera crop of a tennis ball classified correctly on CPU and NPU (94.2 vs 6.93 ms, 13.6×). A diagnostic 640×360 browser preview now captures about 30 fps after startup; asynchronous CPU proposals and NPU checks update a scored tennis-ball box about three times per second. The one-hour stress run was **waived** on 2026-09-26 in favour of the ~15 minutes run; phase 4 is closed on that basis. The SSDLite detector's zero detections are **diagnosed and are not ours**: a tensor-aliasing defect in Mesa's etnaviv ML memory planner empties every output of a fan-out (SSD) head, so object detection on the NPU is blocked upstream. M2 remains in progress; see [NPU proof](tasks/2026-09-16-npu-proof.md), [box demo](tasks/2026-09-16-ball-box-demo.md) and [detector investigation](tasks/2026-09-25-teflon-detector-investigation.md). |
+| NPU proof | Mesa Teflon delegates MobileNet V1 UINT8 to etnaviv/GC8000. A live camera crop of a tennis ball classified correctly on CPU and NPU (94.2 vs 6.93 ms, 13.6×). A diagnostic 640×360 browser preview now captures about 30 fps after startup; asynchronous CPU proposals and NPU checks update a scored tennis-ball box about three times per second. The one-hour stress run was **waived** on 2026-09-26 in favour of the ~15 minutes run; phase 4 is closed on that basis. The packaged Mesa's SSDLite detector returns zero detections. Two candidate patches on Mesa main restored CPU-matching top detections on three saved frames, but bird-detection quality and broader model coverage remain untested. M2 remains in progress; see [NPU proof](tasks/2026-09-16-npu-proof.md), [box demo](tasks/2026-09-16-ball-box-demo.md) and [latest Mesa results](tasks/2026-09-26-teflon-two-fixes.md). |
 
 ## The 3A finding, which reframes "image quality"
 
@@ -110,9 +110,9 @@ verdict to `/tmp/preview-verify.txt`.
 
 M2 NPU proof has begun independently of capture. CPU/NPU outputs and latency
 are measured on synthetic data and a live tennis-ball crop. The NPU
-object-detector mismatch is now explained -- a Mesa defect, see
-[tasks/2026-09-25-teflon-detector-investigation.md](tasks/2026-09-25-teflon-detector-investigation.md)
--- and the interrupted stress run remains. The existing
+object-detector mismatch has two candidate Mesa fixes, verified on saved
+frames; see [tasks/2026-09-26-teflon-two-fixes.md](tasks/2026-09-26-teflon-two-fixes.md).
+The one-hour stress run was waived after a shorter run. The existing
 DS1 checks need not be rerun. Track A is not blocked on Track B. The scaler is
 finished; leave it alone.
 

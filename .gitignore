@@ -2,3 +2,4 @@
 # external/ as pinned submodules.
 /vendor/
 logs/
+/dataset/
