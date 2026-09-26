@@ -1,3 +1,4 @@
 # Board-local upstream sources and build trees. Canonical references live in
 # external/ as pinned submodules.
 /vendor/
+logs/

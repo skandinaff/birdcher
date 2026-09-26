@@ -1,0 +1,8 @@
+FROM mesa-teflon-arm64:26.0.8 AS arm
+FROM --platform=linux/amd64 ubuntu:26.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq && apt-get install -y --no-install-recommends gcc-aarch64-linux-gnu g++-aarch64-linux-gnu build-essential meson ninja-build pkg-config python3-mako python3-yaml python3-setuptools bison flex ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=arm /usr/include /opt/arm64/usr/include
+COPY --from=arm /usr/lib/aarch64-linux-gnu /opt/arm64/usr/lib/aarch64-linux-gnu
+RUN ln -s usr/lib /opt/arm64/lib
+RUN apt-get update -qq && apt-get install -y --no-install-recommends python3-pycparser && rm -rf /var/lib/apt/lists/*

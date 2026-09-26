@@ -3,8 +3,13 @@
 # patch: meson keeps the build directory and ninja rebuilds what changed.
 set -eux
 cd /src/mesa
-if [ ! -d build ]; then
-    meson setup build \
+build_dir=${BUILD_DIR:-build}
+extra_args=()
+if [[ -n ${CROSS_FILE:-} ]]; then
+    extra_args+=("--cross-file=$CROSS_FILE")
+fi
+if [[ ! -f "$build_dir/meson-private/coredata.dat" ]]; then
+    meson setup "$build_dir" "${extra_args[@]}" \
         -Dteflon=true \
         -Dgallium-drivers=etnaviv \
         -Dvulkan-drivers= \
@@ -12,15 +17,13 @@ if [ ! -d build ]; then
         -Dglx=disabled \
         -Degl=disabled \
         -Dgbm=disabled \
-        -Dopengl=false \
+        -Dopengl=true \
         -Dgles1=disabled \
         -Dgles2=disabled \
         -Dllvm=disabled \
-        -Dshared-glapi=disabled \
         -Dvideo-codecs= \
         -Dgallium-va=disabled \
-        -Dgallium-vdpau=disabled \
         -Dbuildtype=debugoptimized
 fi
-ninja -C build src/gallium/targets/teflon/libteflon.so
-ls -l build/src/gallium/targets/teflon/libteflon.so
+ninja -C "$build_dir" -j "${BUILD_JOBS:-4}" src/gallium/targets/teflon/libteflon.so
+ls -l "$build_dir"/src/gallium/targets/teflon/libteflon.so

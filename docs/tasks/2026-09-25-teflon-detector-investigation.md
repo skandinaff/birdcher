@@ -1,5 +1,19 @@
 # Why the NPU detector returns zero detections
 
+> **Follow-up:** [two measured defects and candidate fixes](2026-09-26-teflon-two-fixes.md)
+> now restore CPU-like detections on saved inputs. The investigation below
+> records the earlier state; its outstanding build/localization steps are superseded.
+
+> **2026-09-26 review supersedes the diagnosis and intermediate-value tables below.**
+> [Fresh board measurements](2026-09-26-teflon-ml-review.md) reproduce the final-output mismatch and
+> reveal NPU MMU faults/hung-GPU recovery despite successful `Invoke()`.
+> The original probe reads reused TFLite arena memory after `Invoke()`;
+> preserving tensors changes the CPU head ranges and reveals nonzero NPU
+> concatenated logits. Claims that all heads are zero, that individual op
+> families are excluded, or that all SSDs require an aliasing fix are not
+> established. The historical investigation below is retained as a record,
+> not a ready-to-file diagnosis. See the review for the current next steps.
+
 Updated 2026-09-25. Resolves the open item carried by
 [2026-09-16-npu-proof.md](2026-09-16-npu-proof.md) and
 [2026-09-16-ball-box-demo.md](2026-09-16-ball-box-demo.md): SSDLite MobileDet

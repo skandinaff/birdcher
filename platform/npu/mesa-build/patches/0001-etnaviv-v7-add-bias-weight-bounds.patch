@@ -1,0 +1,15 @@
+diff --git a/src/gallium/drivers/etnaviv/etnaviv_ml_nn_v7.c b/src/gallium/drivers/etnaviv/etnaviv_ml_nn_v7.c
+index 47ecfac..5d701d2 100644
+--- a/src/gallium/drivers/etnaviv/etnaviv_ml_nn_v7.c
++++ b/src/gallium/drivers/etnaviv/etnaviv_ml_nn_v7.c
+@@ -111,7 +111,9 @@ calculate_bias_correction(uint8_t *weights, const struct etna_operation *operati
+ {
+    int32_t correction = 0;
+ 
+-   for (unsigned i = 0; i < operation->weight_width * operation->weight_height * operation->input_channels; i++) {
++   /* ADD is encoded with a single synthetic weight channel. */
++   unsigned input_channels = operation->addition ? 1 : operation->input_channels;
++   for (unsigned i = 0; i < operation->weight_width * operation->weight_height * input_channels; i++) {
+       correction += (weights[i] - operation->weight_zero_point) * operation->input_zero_point;
+    }
+ 

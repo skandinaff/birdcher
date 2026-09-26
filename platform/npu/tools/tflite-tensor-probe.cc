@@ -11,15 +11,18 @@
 // With no tensor indices it lists every readable tensor instead of dumping.
 //
 // Append "+poison" to the backend ("npu+poison") to fill the requested
-// tensors with 0xAA before Invoke. A buffer that still reads 0xAA afterwards
-// was never written, which distinguishes a partition that computed zeros from
-// one that delivered nothing at all.
+// declared output tensors with 0xAA before copying the input and invoking.
+// Changed bytes prove a host-buffer write, not successful hardware execution.
+// Intermediate tensors are preserved in the TFLite arena; this does not expose
+// tensors internal to a delegate. Always check kernel logs for NPU faults.
+// DUMP_DIR=/existing/directory writes requested and declared tensors as N.bin.
 //
 // EXTRA_OUTPUTS="12,34" declares those tensors as additional model outputs
 // before the delegate partitions the graph. That turns a single-output
 // delegated subgraph into a multi-output one without touching the model, which
 // is how to test whether output count is what a delegate mishandles.
 #include <tensorflow/lite/interpreter.h>
+#include <tensorflow/lite/interpreter_options.h>
 #include <tensorflow/lite/interpreter_builder.h>
 #include <tensorflow/lite/kernels/register.h>
 #include <tensorflow/lite/model_builder.h>
@@ -125,6 +128,20 @@ int main(int argc, char** argv) {
         fprintf(stderr, "cannot build interpreter\n"); return 1;
     }
     interp->SetNumThreads(1);
+    tflite::InterpreterOptions audit_options;
+    audit_options.SetPreserveAllTensors();
+    if (interp->ApplyOptions(&audit_options) != kTfLiteOk) {
+        fprintf(stderr, "ApplyOptions failed\n"); return 1;
+    }
+    printf("preserve_all_tensors=true\n");
+    for (int i = 4; i < argc; ++i) {
+        char* end = nullptr;
+        long index = strtol(argv[i], &end, 10);
+        if (!*argv[i] || *end || index < 0 ||
+            static_cast<size_t>(index) >= interp->tensors_size()) {
+            fprintf(stderr, "invalid tensor index: %s\n", argv[i]); return 2;
+        }
+    }
 
     if (const char* extra = getenv("EXTRA_OUTPUTS")) {
         std::vector<int> outputs = interp->outputs();
@@ -133,7 +150,16 @@ int main(int argc, char** argv) {
         while (at < spec.size()) {
             size_t comma = spec.find(',', at);
             if (comma == std::string::npos) comma = spec.size();
-            outputs.push_back(atoi(spec.substr(at, comma - at).c_str()));
+            std::string token = spec.substr(at, comma - at);
+            char* end = nullptr;
+            long index = strtol(token.c_str(), &end, 10);
+            if (token.empty() || *end || index < 0 ||
+                static_cast<size_t>(index) >= interp->tensors_size()) {
+                fprintf(stderr, "invalid EXTRA_OUTPUTS index: %s\n", token.c_str());
+                return 2;
+            }
+            if (std::find(outputs.begin(), outputs.end(), index) == outputs.end())
+                outputs.push_back(static_cast<int>(index));
             at = comma + 1;
         }
         if (interp->SetOutputs(outputs) != kTfLiteOk) {
@@ -168,17 +194,23 @@ int main(int argc, char** argv) {
         fprintf(stderr, "frame is %zu bytes, model wants %zu\n", pixels.size(), input->bytes);
         return 1;
     }
-    memcpy(input->data.raw, pixels.data(), pixels.size());
 
     if (poison) {
         for (int i = 4; i < argc; ++i) {
             TfLiteTensor* t = interp->tensor(atoi(argv[i]));
+            if (std::find(interp->outputs().begin(), interp->outputs().end(),
+                          atoi(argv[i])) == interp->outputs().end()) {
+                fprintf(stderr, "poison requires a declared output: %s\n", argv[i]);
+                return 2;
+            }
             if (t && t->data.raw && t->allocation_type != kTfLiteMmapRo) {
                 memset(t->data.raw, 0xAA, t->bytes);
                 printf("poisoned tensor %s with 0xAA\n", argv[i]);
             }
         }
     }
+
+    memcpy(input->data.raw, pixels.data(), pixels.size());
 
     if (interp->Invoke() != kTfLiteOk) { fprintf(stderr, "Invoke failed\n"); return 1; }
 
@@ -194,12 +226,24 @@ int main(int argc, char** argv) {
                    t->allocation_type == kTfLiteMmapRo ? "const" : "live ",
                    t->name);
         }
-        return 0;
     }
     for (int i = 4; i < argc; ++i) dump(interp.get(), atoi(argv[i]));
 
     printf("-- declared outputs --\n");
     for (int o : interp->outputs()) dump(interp.get(), o);
+    if (const char* dir = getenv("DUMP_DIR")) {
+        std::vector<int> indices = interp->outputs();
+        for (int i = 4; i < argc; ++i) indices.push_back(atoi(argv[i]));
+        for (int index : indices) {
+            const TfLiteTensor* t = interp->tensor(index);
+            if (!t || !t->data.raw) continue;
+            std::ofstream out(std::string(dir) + "/" + std::to_string(index) + ".bin",
+                              std::ios::binary);
+            out.write(t->data.raw, t->bytes);
+            if (!out) { fprintf(stderr, "tensor dump failed\n"); return 1; }
+        }
+    }
+    interp.reset();
     if (delegate) TfLiteExternalDelegateDelete(delegate);
     return 0;
 }

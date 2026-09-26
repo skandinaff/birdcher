@@ -1,0 +1,26 @@
+diff --git a/src/gallium/drivers/etnaviv/etnaviv_ml.c b/src/gallium/drivers/etnaviv/etnaviv_ml.c
+index 1a1d2de..a476769 100644
+--- a/src/gallium/drivers/etnaviv/etnaviv_ml.c
++++ b/src/gallium/drivers/etnaviv/etnaviv_ml.c
+@@ -464,6 +464,21 @@ lower_operations(struct etna_ml_subgraph *subgraph,
+             break;
+          }
+          case PIPE_ML_OPERATION_TYPE_RESHAPE: {
++            /* Reshape preserves the framework's linear NHWC element order. */
++            struct etna_ml_tensor *input = etna_ml_get_tensor(subgraph, input_tensors[0]);
++            if (input->act_layout == ETNA_ML_LAYOUT_NCHW &&
++                input->exp_layout == ETNA_ML_LAYOUT_NHWC &&
++                is_3d(poperation->input_tensors[0])) {
++               struct etna_operation *detranspose = calloc(1, sizeof(*detranspose));
++               etna_ml_lower_detranspose(subgraph, poperation->input_tensors[0], detranspose);
++               detranspose->input_tensors[0] = input_tensors[0];
++               detranspose->output_tensors[0] = etna_ml_allocate_tensor(subgraph);
++               list_addtail(&detranspose->link, etna_operations);
++               input_tensors[0] = detranspose->output_tensors[0];
++               struct etna_ml_tensor *output = etna_ml_get_tensor(subgraph, input_tensors[0]);
++               output->act_layout = ETNA_ML_LAYOUT_NHWC;
++               output->exp_layout = ETNA_ML_LAYOUT_NHWC;
++            }
+             add_bypass(poperation, input_tensors[0], operation, etna_operations);
+             break;
+          }
