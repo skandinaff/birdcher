@@ -45,6 +45,11 @@ obvious duplicates. A palette check excludes common purple audio spectrograms
 stored as observation photos. The script makes requests no faster than once per second,
 retries transient failures, and stays within the API's 10,000-result window.
 
+That palette check is a **rejection filter, not audio support**: acoustic
+recognition is planned for Birdcher but deliberately not started, and this code
+exists to keep audio artefacts out of a visual evaluation set. See the audio
+scope statement in [../../docs/ROADMAP.md](../../docs/ROADMAP.md#scope-audio-is-planned-and-deliberately-not-started).
+
 The local set has been screened for obvious spectrograms; removed rows and
 reasons are kept in `rejections.csv`. The downloader skips those observations
 when resuming. This automated screen can miss other non-photographic images,

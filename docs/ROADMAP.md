@@ -32,6 +32,35 @@ The final system should:
 
 Do not assume that CSI, hardware video encoding, or the NPU already work. Validate each subsystem independently before integrating them.
 
+## Scope: audio is planned, and deliberately not started
+
+Acoustic bird recognition **is** intended for this project. It is **not** part of
+phases 0-10, and no work on it should begin until the camera path is delivered.
+Stated here because it keeps coming up and because one artefact in the tree looks
+like audio work and is not.
+
+What "not started" means concretely, as of 2026-09-26:
+
+- No audio capture path. No microphone in the device tree, no I2S or USB audio
+  node configured, no recording, no decision on the input hardware.
+- No acoustic model, dataset or evaluation.
+- No phase, acceptance criteria or budget. When audio starts it needs its own
+  phase with its own criteria; it will not be appended to a vision phase.
+
+**The one thing in the tree that mentions spectrograms does the opposite of
+audio work.** `tools/dataset/download_dataset.py` has a palette check that
+*rejects* purple audio spectrograms, because iNaturalist stores them as the
+"photo" of an audio observation and they would otherwise pollute a visual
+evaluation set. It is a filter that keeps audio artefacts **out**. Do not read
+it as the start of an audio pipeline.
+
+When audio is taken up, these are the things not to rediscover: it is a separate
+input path with its own capture, buffering and synchronisation questions; it
+likely wants its own model rather than an extension of the detector; it may
+contend with the vision path for the NPU, whose graph compilation is measured in
+tens of seconds; and a bird heard is not a bird seen, so the event model has to
+decide whether audio triggers recording on its own or only corroborates.
+
 ---
 
 ## Current Platform
@@ -762,3 +791,11 @@ dmesg | grep -Ei 'camera|csi|mipi|isp|sensor|video|v4l2|media|etnaviv|npu|galcor
 ```
 
 Do not proceed to Frigate, Docker, or ML until CSI capture works reliably.
+
+---
+
+# Out of scope for phases 0-10: acoustic recognition
+
+See **Scope: audio** near the top. Audio is planned for the project and is not
+part of this plan. It gets its own phase, written when the camera path is
+delivered, not before.
