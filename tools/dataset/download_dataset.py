@@ -135,6 +135,14 @@ def image_jpeg(raw, max_size):
         if image.width < 64 or image.height < 64:
             raise ValueError("image too small")
         image = image.convert("RGB")
+        # Audio observations may carry a purple spectrogram as their "photo".
+        # These are common in bird observations and unusable for visual tests.
+        sample = list(image.resize((64, 64), Image.Resampling.BILINEAR).getdata())
+        dark = sum(max(pixel) < 80 for pixel in sample) / len(sample)
+        purple = sum(b > r * 1.2 and r > g * 1.2 and b > g * 1.4
+                     for r, g, b in sample) / len(sample)
+        if dark > 0.45 and purple > 0.25:
+            raise ValueError("likely audio spectrogram")
         gray = image.convert("L").resize((9, 8), Image.Resampling.LANCZOS)
         pixels = list(gray.getdata())
         dhash = sum((pixels[y * 9 + x] > pixels[y * 9 + x + 1]) << (y * 8 + x)
@@ -269,6 +277,12 @@ def run(args):
                                     for y in range(8) for x in range(8)))
         except OSError:
             pass
+    rejected_path = output / "rejections.csv"
+    if rejected_path.exists():
+        with rejected_path.open(newline="", encoding="utf-8") as rejected_file:
+            for row in csv.DictReader(rejected_file):
+                seen_observations.add(int(row["observation_id"]))
+                seen_photos.add(int(row["photo_id"]))
     rng = random.Random(args.seed)
     client = Requester(args.delay, args.retries, args.timeout)
     places = resolve_places(client, REGIONS[args.region])

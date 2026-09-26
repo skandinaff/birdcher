@@ -66,6 +66,13 @@ class DownloadDatasetTest(unittest.TestCase):
             "https://static.inaturalist.org/photos/1/large.jpg",
         )
 
+    def test_rejects_spectrogram_palette(self):
+        image = Image.new("RGB", (1024, 300), (39, 11, 60))
+        raw = io.BytesIO()
+        image.save(raw, format="JPEG")
+        with self.assertRaisesRegex(ValueError, "spectrogram"):
+            dataset.image_jpeg(raw.getvalue(), 1024)
+
 
 if __name__ == "__main__":
     unittest.main()

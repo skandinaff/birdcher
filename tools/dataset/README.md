@@ -29,7 +29,9 @@ dataset/
 ├── house_sparrow/ ... nuthatch/
 ├── other_birds/
 ├── no_bird/
-└── metadata.csv
+├── metadata.csv
+├── review.csv
+└── rejections.csv
 ```
 
 The downloader requests research-grade observations with photos, then checks
@@ -39,8 +41,30 @@ The downloader requests research-grade observations with photos, then checks
 and photo IDs, source URLs, photo license, photographer attribution, observed
 date, country and place text when available, size and SHA-256. One photo per
 observation is used. Exact hashes and a conservative perceptual hash suppress
-obvious duplicates. The script makes requests no faster than once per second,
+obvious duplicates. A palette check excludes common purple audio spectrograms
+stored as observation photos. The script makes requests no faster than once per second,
 retries transient failures, and stays within the API's 10,000-result window.
+
+The local set has been screened for obvious spectrograms; removed rows and
+reasons are kept in `rejections.csv`. The downloader skips those observations
+when resuming. This automated screen can miss other non-photographic images,
+so it does not replace visual review.
+
+To review images and draw bird boxes locally, run:
+
+```sh
+python3 tools/dataset/review_dataset.py --dataset dataset
+```
+
+Open `http://127.0.0.1:8765/` on the **same computer**. Pick a category,
+inspect the full image, drag a box around each visible bird if localization
+will be tested, select scene conditions, and choose a decision. `B`, `N`,
+`U`, and `R` are keyboard shortcuts; arrow keys change images. Decisions are
+saved immediately to `dataset/review.csv`, so review can be resumed. A
+`bird_visible` decision with empty boxes confirms presence only; it is not a
+localization annotation. Use `uncertain` when the bird or species cannot be
+verified and `reject` for unsuitable images. The browser does not modify
+`metadata.csv` or delete files.
 
 `other_birds` comes from observations of Aves that are not one of the 12
 target species. `no_bird` comes from plant observations, **which can still

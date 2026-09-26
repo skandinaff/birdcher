@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birdcher dataset review</title>
+<style>
+  body { font: 16px system-ui, sans-serif; color: #183028; background: #f3f5ef; margin: 0 auto; max-width: 1250px; padding: 20px; }
+  header, .toolbar, .actions, .details { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  button, select, input, textarea { font: inherit; padding: 7px; }
+  button { cursor: pointer; }
+  #stage { position: relative; width: fit-content; max-width: 100%; background: #18251d; touch-action: none; }
+  #photo { display: block; max-width: 100%; max-height: 72vh; width: auto; height: auto; }
+  #boxes { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; }
+  #status { font-weight: bold; }
+  #conditions label { white-space: nowrap; margin-right: 10px; }
+  textarea { width: min(100%, 700px); min-height: 48px; }
+  .muted { color: #53655b; }
+  .error { color: #a32e28; }
+</style>
+<header><h1>Birdcher dataset review</h1><span id="progress"></span></header>
+<div class="toolbar">
+  <label>Category <select id="category"><option value="">All</option></select></label>
+  <label><input id="unreviewed" type="checkbox" checked> Unreviewed only</label>
+  <button id="previous">Previous</button><button id="next">Next</button>
+  <span id="position"></span>
+</div>
+<div id="stage"><img id="photo" alt="Dataset image"><canvas id="boxes"></canvas></div>
+<div class="details"><strong id="path"></strong><span id="species"></span><span id="country"></span><span id="status"></span></div>
+<div class="actions">
+  <button data-decision="bird_visible">Bird visible (B)</button>
+  <button data-decision="no_bird">No bird (N)</button>
+  <button data-decision="uncertain">Uncertain (U)</button>
+  <button data-decision="reject">Reject image (R)</button>
+  <button id="undo">Undo last box</button>
+</div>
+<div id="conditions"></div>
+<p class="muted">Drag on the image to draw one box per bird. A reviewed bird image may have zero boxes if only presence has been checked. Decisions are saved immediately to review.csv.</p>
+<textarea id="notes" placeholder="Notes on label, visibility, or scene"></textarea>
+<p id="message" aria-live="polite"></p>
+<script>
+const tags = ['tiny','multiple','occluded','feeder','low_light','snow','blur','busy_background','side_or_back'];
+const $ = id => document.getElementById(id);
+let items = [], current = 0, boxes = [], drag = null;
+for (const tag of tags) {
+  const label = document.createElement('label');
+  const input = document.createElement('input'); input.type = 'checkbox'; input.value = tag;
+  label.append(input, ' ' + tag.replaceAll('_', ' ')); $('conditions').append(label);
+}
+function filtered() { return items.filter(x => (!$('category').value || x.category === $('category').value) && (!$('unreviewed').checked || !x.review)); }
+function currentItem() { return filtered()[current]; }
+function display() {
+  const list = filtered();
+  if (current >= list.length) current = Math.max(0, list.length - 1);
+  const item = currentItem();
+  $('progress').textContent = `${items.filter(x => x.review).length}/${items.length} reviewed`;
+  $('position').textContent = list.length ? `${current + 1}/${list.length}` : 'No images';
+  $('stage').style.display = item ? 'block' : 'none';
+  $('path').textContent = item?.path || '';
+  $('species').textContent = item?.scientific_name || '';
+  $('country').textContent = item?.country || '';
+  $('status').textContent = item?.review?.decision || '';
+  $('notes').value = item?.review?.notes || '';
+  for (const input of $('conditions').querySelectorAll('input')) input.checked = !!item?.review?.conditions?.split(',').includes(input.value);
+  boxes = item?.review ? JSON.parse(item.review.boxes || '[]') : [];
+  $('photo').src = item ? '/images/' + encodeURI(item.path) : '';
+  draw();
+}
+function draw() {
+  const item = currentItem(), canvas = $('boxes'), image = $('photo');
+  canvas.width = image.clientWidth; canvas.height = image.clientHeight;
+  const ctx = canvas.getContext('2d');
+  if (!item || !canvas.width || !canvas.height) return;
+  ctx.strokeStyle = '#ff3434'; ctx.lineWidth = 3;
+  for (const b of boxes) ctx.strokeRect(b.x * canvas.width / item.width, b.y * canvas.height / item.height, b.w * canvas.width / item.width, b.h * canvas.height / item.height);
+  if (drag) ctx.strokeRect(drag.x, drag.y, drag.w, drag.h);
+}
+$('photo').onload = draw;
+window.onresize = draw;
+function point(event) { const r = $('boxes').getBoundingClientRect(); return {x: Math.max(0, Math.min(r.width, event.clientX-r.left)), y: Math.max(0, Math.min(r.height, event.clientY-r.top))}; }
+$('boxes').onpointerdown = event => { const p = point(event); drag = {x:p.x,y:p.y,w:0,h:0}; $('boxes').setPointerCapture(event.pointerId); };
+$('boxes').onpointermove = event => { if (!drag) return; const p = point(event); drag.w=p.x-drag.x; drag.h=p.y-drag.y; draw(); };
+$('boxes').onpointerup = event => {
+  if (!drag || !currentItem()) return;
+  const item=currentItem(), p=point(event), x=Math.min(drag.x,p.x), y=Math.min(drag.y,p.y), w=Math.abs(p.x-drag.x), h=Math.abs(p.y-drag.y);
+  if (w >= 3 && h >= 3) boxes.push({x:Math.round(x*item.width/$('boxes').width),y:Math.round(y*item.height/$('boxes').height),w:Math.round(w*item.width/$('boxes').width),h:Math.round(h*item.height/$('boxes').height)});
+  drag=null; draw();
+};
+$('undo').onclick = () => { boxes.pop(); draw(); };
+$('previous').onclick = () => { current=Math.max(0,current-1); display(); };
+$('next').onclick = () => { current=Math.min(filtered().length-1,current+1); display(); };
+$('category').onchange = $('unreviewed').onchange = () => { current=0; display(); };
+async function save(decision) {
+  const item=currentItem(); if (!item) return;
+  const conditions=[...$('conditions').querySelectorAll('input:checked')].map(x=>x.value);
+  const response=await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:item.path,decision,boxes:decision==='no_bird'?[]:boxes,conditions,notes:$('notes').value})});
+  const result=await response.json();
+  if (!response.ok) { $('message').className='error'; $('message').textContent=result.error; return; }
+  $('message').className=''; $('message').textContent=`Saved ${item.path}`;
+  item.review=result;
+  if ($('unreviewed').checked) display(); else { current=Math.min(current+1,filtered().length-1); display(); }
+}
+for (const button of document.querySelectorAll('[data-decision]')) button.onclick=()=>save(button.dataset.decision);
+document.onkeydown = event => {
+  if (['TEXTAREA','INPUT','SELECT'].includes(document.activeElement.tagName)) return;
+  const key={b:'bird_visible',n:'no_bird',u:'uncertain',r:'reject'}[event.key.toLowerCase()];
+  if (key) save(key);
+  if (event.key==='ArrowRight') $('next').click();
+  if (event.key==='ArrowLeft') $('previous').click();
+};
+fetch('/api/items').then(r=>r.json()).then(data=>{
+  items=data;
+  for (const category of [...new Set(items.map(x=>x.category))].sort()) {
+    const option=document.createElement('option'); option.value=option.textContent=category; $('category').append(option);
+  }
+  display();
+});
+</script>
+</html>
